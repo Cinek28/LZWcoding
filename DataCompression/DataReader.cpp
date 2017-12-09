@@ -17,8 +17,7 @@ DataReader::DataReader(string filename)
 
 	if (extension == ".txt")
 	{
-		_config.bit_count = 8;
-		_config.type = ReadTypeEnum::Linear;
+		readTextFile(file)
 	}
 	else if (extension == ".pgm")
 	{
@@ -29,13 +28,24 @@ DataReader::DataReader(string filename)
 		_config.bit_count = 8;
 		_config.type = ReadTypeEnum::Linear;
 	}
+	file.close();
 }
 
 
 DataReader::~DataReader()
 {
 }
-
+void DataReader::readTextFile(std::ifstream &file)
+{
+	_config.bit_count = 8;
+	_config.type = ReadTypeEnum::LinearAscii;
+	char c;
+	while (file.get(c))
+	{
+		uint8_t byte = (uint8_t)c;
+		_buffer.push_back((uint16_t)byte);
+	}
+}
 void DataReader::readPgmFile(std::ifstream &file)
 {
 	_config.bit_count = 8;
@@ -104,9 +114,13 @@ void DataReader::readPgmFile(std::ifstream &file)
 }
 DataReader::ReadConfigStruct DataReader::getType()
 {
-	return ReadConfigStruct();
+	return _config;
 }
 vector<uint16_t>& DataReader::getBuffer()
 {
-	return vector<uint16_t>();
+	return _buffer;
+}
+vector<uint16_t>& DataReader::getHeader()
+{
+	return _header;
 }

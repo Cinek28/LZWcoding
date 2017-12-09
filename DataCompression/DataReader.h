@@ -14,6 +14,7 @@ public:
 	typedef enum ReadTypeEnum {
 		Linear,
 		Split3Color,
+		LinearAscii,
 		Unimplemented
 	};
 	typedef struct ReadConfigStruct {
@@ -22,8 +23,10 @@ public:
 	};
 	ReadConfigStruct getType();
 	std::vector<uint16_t>& getBuffer();
+	std::vector<uint16_t>& getHeader();
 private:
 	void readPgmFile(std::ifstream &file);
+	void readTextFile(std::ifstream &file);
 	std::vector<uint16_t> _buffer;
 	std::vector<uint16_t> _header;
 	ReadConfigStruct _config;
