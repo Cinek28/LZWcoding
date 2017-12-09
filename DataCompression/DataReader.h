@@ -1,6 +1,10 @@
 #pragma once
 #include <vector>
 #include <string>
+#include <iostream>
+#include <fstream>
+#include <stdexcept>
+#include <sstream>
 
 class DataReader
 {
@@ -18,6 +22,12 @@ public:
 	};
 	ReadConfigStruct getType();
 	std::vector<uint16_t>& getBuffer();
+private:
+	void readPgmFile(std::ifstream &file);
+	std::vector<uint16_t> _buffer;
+	std::vector<uint16_t> _header;
+	ReadConfigStruct _config;
+
 
 };
 
