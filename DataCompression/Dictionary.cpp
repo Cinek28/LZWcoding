@@ -6,16 +6,16 @@
 using namespace std;
 
 Dictionary::Dictionary(uint8_t entryBitSize, uint8_t outputBitSize)
-	: _currentIndexNumber(0)
+	: _currentIndexNumber(0),
+	_entryBitSize(entryBitSize),
+	_outputBitSize(outputBitSize)
 {
 	if (entryBitSize > 12 || entryBitSize > outputBitSize)
 	{
 		throw invalid_argument("Wrong entry bit size.");
 	}
 
-	_alphabetSize = pow(2, entryBitSize);
-	_maxIndexNumber = pow(2, outputBitSize);
-
+	initializeValues();
 	initializeAlphabet();
 }
 
@@ -23,20 +23,42 @@ Dictionary::~Dictionary()
 {
 }
 
+void Dictionary::initializeValues()
+{
+	_alphabetSize = pow(2, _entryBitSize);
+	_maxIndexNumber = pow(2, _outputBitSize);
+
+	overflowFlag = _maxIndexNumber;
+	_maxIndexNumber = _maxIndexNumber - FLAGS_NUMBER;
+}
+
+void Dictionary::initializeAlphabet()
+{
+	for (_currentIndexNumber; _currentIndexNumber < _alphabetSize; ++_currentIndexNumber)
+	{
+		_container[vector<uint16_t>(static_cast<uint16_t>(_currentIndexNumber))] = _currentIndexNumber;
+	}
+}
+
+void Dictionary::flush()
+{
+	_container.clear();
+}
+
 bool Dictionary::getEntry(vector<uint16_t> word, uint32_t& index)
 {
 	bool state;
 
-	auto foundIndex = _container.find(word);
+	auto containerElement = _container.find(word);
 
-	if (foundIndex == _container.end())
+	if (containerElement == _container.end() || containerElement->second != overflowFlag)
 	{
 		state = false;
 	}
 	else
 	{
 		state = true;
-		index = foundIndex->second;
+		index = containerElement->second;
 	}
 
 	return state;
@@ -48,8 +70,8 @@ uint32_t Dictionary::insertEntry(vector<uint16_t> word)
 
 	if (_container.size() > _maxIndexNumber)
 	{
-		// TO DO: return flag index
-		// TO DO: dictionary overflow
+		index = overflowFlag;
+		flush();
 	}
 	else
 	{
@@ -60,10 +82,7 @@ uint32_t Dictionary::insertEntry(vector<uint16_t> word)
 	return index;
 }
 
-void Dictionary::initializeAlphabet()
+uint32_t Dictionary::getOverflowFlag()
 {
-	for (_currentIndexNumber; _currentIndexNumber < _alphabetSize; ++_currentIndexNumber)
-	{
-		_container[vector<uint16_t>(_currentIndexNumber)] = _currentIndexNumber;
-	}
+	return overflowFlag;
 }
