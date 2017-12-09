@@ -17,7 +17,7 @@ DataReader::DataReader(string filename)
 
 	if (extension == ".txt")
 	{
-		readTextFile(file)
+		readTextFile(file);
 	}
 	else if (extension == ".pgm")
 	{
