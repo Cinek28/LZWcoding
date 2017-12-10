@@ -120,7 +120,7 @@ vector<uint16_t>& DataReader::getBuffer()
 {
 	return _buffer;
 }
-vector<uint16_t>& DataReader::getHeader()
+vector<uint8_t>& DataReader::getHeader()
 {
 	return _header;
 }

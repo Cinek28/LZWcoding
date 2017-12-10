@@ -23,12 +23,12 @@ public:
 	};
 	ReadConfigStruct getType();
 	std::vector<uint16_t>& getBuffer();
-	std::vector<uint16_t>& getHeader();
+	std::vector<uint8_t>& getHeader();
 private:
 	void readPgmFile(std::ifstream &file);
 	void readTextFile(std::ifstream &file);
 	std::vector<uint16_t> _buffer;
-	std::vector<uint16_t> _header;
+	std::vector<uint8_t> _header;
 	ReadConfigStruct _config;
 
 

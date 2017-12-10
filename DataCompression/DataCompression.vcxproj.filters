@@ -12,6 +12,7 @@
     <ClCompile Include="Dictionary.cpp">
       <Filter>Dictionary</Filter>
     </ClCompile>
+    <ClCompile Include="DataCoder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataReader.h" />
@@ -24,6 +25,8 @@
     <ClInclude Include="Dictionary.h">
       <Filter>Dictionary</Filter>
     </ClInclude>
+    <ClInclude Include="DataCoder.h" />
+    <ClInclude Include="defines.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Dictionary">

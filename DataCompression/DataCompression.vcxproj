@@ -124,6 +124,7 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="DataCoder.cpp" />
     <ClCompile Include="HashDictionary.cpp" />
     <ClCompile Include="TableDictionary.cpp" />
     <ClCompile Include="Dictionary.cpp" />
@@ -131,6 +132,8 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DataCoder.h" />
+    <ClInclude Include="defines.h" />
     <ClInclude Include="HashDictionary.h" />
     <ClInclude Include="TableDictionary.h" />
     <ClInclude Include="Dictionary.h" />
