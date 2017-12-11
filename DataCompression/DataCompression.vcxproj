@@ -126,6 +126,7 @@
   <ItemGroup>
     <ClCompile Include="DataCoder.cpp" />
     <ClCompile Include="HashDictionary.cpp" />
+    <ClCompile Include="LZWEngine.cpp" />
     <ClCompile Include="TableDictionary.cpp" />
     <ClCompile Include="Dictionary.cpp" />
     <ClCompile Include="DataReader.cpp" />
@@ -135,6 +136,7 @@
     <ClInclude Include="DataCoder.h" />
     <ClInclude Include="defines.h" />
     <ClInclude Include="HashDictionary.h" />
+    <ClInclude Include="LZWEngine.h" />
     <ClInclude Include="TableDictionary.h" />
     <ClInclude Include="Dictionary.h" />
     <ClInclude Include="DataReader.h" />

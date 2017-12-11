@@ -13,6 +13,7 @@
       <Filter>Dictionary</Filter>
     </ClCompile>
     <ClCompile Include="DataCoder.cpp" />
+    <ClCompile Include="LZWEngine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataReader.h" />
@@ -27,6 +28,7 @@
     </ClInclude>
     <ClInclude Include="DataCoder.h" />
     <ClInclude Include="defines.h" />
+    <ClInclude Include="LZWEngine.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Dictionary">

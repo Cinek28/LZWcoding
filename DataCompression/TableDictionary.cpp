@@ -14,13 +14,13 @@ TableDictionary::~TableDictionary()
 
 void TableDictionary::initializeAlphabet()
 {
-	for (_currentIndexNumber; _currentIndexNumber <= _alphabetSize; ++_currentIndexNumber)
+	for (_currentIndexNumber; _currentIndexNumber < _alphabetSize; ++_currentIndexNumber)
 	{
-		_container.push_back(vector<uint16_t>(static_cast<uint16_t>(_currentIndexNumber)));
+		_container.push_back(vector<uint16_t>{static_cast<uint16_t>(_currentIndexNumber)});
 	}
 }
 
-bool TableDictionary::getIndex(std::vector<uint16_t> word, uint32_t& index)
+bool TableDictionary::getIndex(std::vector<uint16_t>& word, uint32_t& index)
 {
 	for(uint32_t i=0; i <_container.size(); ++i)
 	{
@@ -33,11 +33,11 @@ bool TableDictionary::getIndex(std::vector<uint16_t> word, uint32_t& index)
 	return false;
 }
 
-uint32_t TableDictionary::insertEntry(std::vector<uint16_t> word)
+uint32_t TableDictionary::insertEntry(std::vector<uint16_t>& word)
 {
 	if (_currentIndexNumber <= _maxIndexNumber)
 	{
-		_container[_currentIndexNumber] = word;
+		_container.push_back(word);
 		return _currentIndexNumber++;
 	}
 	else
@@ -63,6 +63,7 @@ bool TableDictionary::getEntry(uint32_t index, std::vector<uint16_t>& word)
 void TableDictionary::flush()
 {
 	_container.clear();
-	// TO DO: czy wypelniamy jeszcze raz alfabet??
+	_currentIndexNumber = 0;
+	initializeAlphabet();
 }
 

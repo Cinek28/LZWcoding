@@ -25,7 +25,7 @@ Dictionary::~Dictionary()
 void Dictionary::initializeValues()
 {
 	_alphabetSize = pow(2, _entryBitSize);
-	_maxIndexNumber = pow(2, _outputBitSize);
+	_maxIndexNumber = pow(2, _outputBitSize)-1;
 
 	_overflowFlag = _maxIndexNumber;
 	_maxIndexNumber = _maxIndexNumber - FLAGS_NUMBER;
