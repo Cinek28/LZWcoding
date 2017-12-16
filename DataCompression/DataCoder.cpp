@@ -93,23 +93,34 @@ void DataCoder::writeIndex(uint32_t index)
 	}
 
 }
-void DataCoder::writeCompressionHeader()
+void DataCoder::writeCompressionHeader(LZWCompressHeader header)
 {
 
-}
-void DataCoder::writeUncompressedData(vector<uint8_t> data)
-{
-	if (data.size() == 0)
+	uint8_t data_size = sizeof(LZWCompressHeader);
+	if (data_size > 255)
+		throw std::out_of_range("Compression structure size too large");
+	
+	_file.put((char)data_size);
+	char *charHeader = reinterpret_cast<char*>(&header);
+	for (int i = 0; i < data_size; ++i)
 	{
-		std::cout << "No data specified to write as uncompressed";
-		return; 
+		_file.put(charHeader[i]);
 	}
-	char *buf;
-	buf = new char[data.size()];
-	for (int i = 0; i < data.size(); ++i)
-	{
-		buf[i] = data[i];
-	}
-	_file.write(buf, data.size());
-	delete[] buf;
 }
+//
+//void DataCoder::writeUncompressedData(vector<uint8_t> data)
+//{
+//	if (data.size() == 0)
+//	{
+//		std::cout << "No data specified to write as uncompressed";
+//		return; 
+//	}
+//	char *buf;
+//	buf = new char[data.size()];
+//	for (int i = 0; i < data.size(); ++i)
+//	{
+//		buf[i] = data[i];
+//	}
+//	_file.write(buf, data.size());
+//	delete[] buf;
+//}
