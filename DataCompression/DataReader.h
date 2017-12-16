@@ -12,13 +12,8 @@ class DataReader
 public:
 	DataReader(std::string filename);
 	~DataReader();
-	
-	struct ReadConfigStruct {
-		ReadTypeEnum type;
-		uint8_t bit_count;
-	};
 
-	ReadConfigStruct getType();
+	LZWCompressHeader getConfig();
 	std::vector<uint16_t>& getBuffer();
 	std::vector<uint8_t>& getHeader();
 	bool isDecoding()
@@ -31,7 +26,7 @@ private:
 	void readLzwFile(std::ifstream &file);
 	std::vector<uint16_t> _buffer;
 	std::vector<uint8_t> _header;
-	ReadConfigStruct _config;
+	LZWCompressHeader _config;
 	bool _isDecoding = false;
 
 };

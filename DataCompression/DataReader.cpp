@@ -25,12 +25,12 @@ DataReader::DataReader(string filename)
 	}
 	else if (extension == ".lzw")
 	{
-		_readLzwFile(file);
+		readLzwFile(file);
 	}
 	else
 	{
-		_config.bit_count = 8;
-		_config.type = ReadTypeEnum::Linear;
+		_config.word_bit_count = 8;
+		_config.data_order_type = ReadTypeEnum::Linear;
 	}
 	file.close();
 }
@@ -41,8 +41,8 @@ DataReader::~DataReader()
 }
 void DataReader::readTextFile(std::ifstream &file)
 {
-	_config.bit_count = 8;
-	_config.type = ReadTypeEnum::LinearAscii;
+	_config.word_bit_count = 8;
+	_config.data_order_type = ReadTypeEnum::LinearAscii;
 	char c;
 	while (file.get(c))
 	{
@@ -53,8 +53,8 @@ void DataReader::readTextFile(std::ifstream &file)
 
 void DataReader::readPgmFile(std::ifstream &file)
 {
-	_config.bit_count = 8;
-	_config.type = ReadTypeEnum::Linear;
+	_config.word_bit_count = 8;
+	_config.data_order_type = ReadTypeEnum::Linear;
 
 	//read and copy header info of pgm file//
 	int PGM_HEADER_LINES = 3;
@@ -89,17 +89,17 @@ void DataReader::readPgmFile(std::ifstream &file)
 	}
 	if (pgm_type == "P6")
 	{
-		_config.type = ReadTypeEnum::Split3Color;
+		_config.data_order_type = ReadTypeEnum::Split3Color;
 	}
 	//Get values to the buffer and reassemble as correct bitness//
 	char c;
-	if (_config.type = ReadTypeEnum::Linear)
+	if (_config.data_order_type = ReadTypeEnum::Linear)
 		while (file.get(c))
 		{
 			uint8_t byte = (uint8_t)c;
 			_buffer.push_back((uint16_t)byte);
 		}
-	else if (_config.type = ReadTypeEnum::Split3Color)
+	else if (_config.data_order_type = ReadTypeEnum::Split3Color)
 	{
 		vector<uint8_t> colors[3];
 		int color = 0;
@@ -120,24 +120,33 @@ void DataReader::readPgmFile(std::ifstream &file)
 
 void DataReader::readLzwFile(std::ifstream &file)
 {
-	/*
+	_isDecoding = true;
 	//Read up the input structure//
 	//first byte is the input structure byte size//
 	uint8_t comp_header_size = 0;
 	if (!file.get((char&)comp_header_size))
 		throw std::invalid_argument("File empty");
 	//Read compression header//
-	if (comp_header_size != sizeof(heder))
+	if (comp_header_size != sizeof(LZWCompressHeader))
 		throw std::invalid_argument("Compression header incompatible");
-	heder compHeader;
-	char *charHeader = reinterpret_cast<
+	LZWCompressHeader compHeader;
+	char c;
+	char *charHeader = reinterpret_cast<char*>(&compHeader);
 	for (int i = 0; i < comp_header_size; ++i)
 	{
-		 
-	}*/
+		 if(!file.get(c))
+			 throw std::invalid_argument("File finished prematurely");
+		 charHeader[i] = c;
+	}
+	_config = compHeader;
+	while (file.get(c))
+	{
+		uint8_t byte = (uint8_t)c;
+		_buffer.push_back((uint16_t)byte);
+	}
 
 }
-DataReader::ReadConfigStruct DataReader::getType()
+LZWCompressHeader DataReader::getConfig()
 {
 	return _config;
 }
