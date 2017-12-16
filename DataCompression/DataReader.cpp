@@ -138,22 +138,55 @@ void DataReader::readLzwFile(std::ifstream &file)
 	if (comp_header_size != sizeof(LZWCompressHeader))
 		throw std::invalid_argument("Compression header incompatible");
 	LZWCompressHeader compHeader;
-	char c;
+	char byte;
 	char *charHeader = reinterpret_cast<char*>(&compHeader);
 	for (int i = 0; i < comp_header_size; ++i)
 	{
-		 if(!file.get(c))
+		 if(!file.get(byte))
 			 throw std::invalid_argument("File finished prematurely");
-		 charHeader[i] = c;
+		 charHeader[i] = byte;
 	}
 	_config = compHeader;
 	_buffer.push_back(vector<uint16_t>());
-	while (file.get(c))
+	//Decoding stage//
+	uint32_t lowerMask, higherMask;
+	uint32_t remainder = 0, shift = 0;
+	const uint8_t byteSize = 8;
+	uint16_t indexMask = 0;
+	uint16_t outputIndex = 0;
+	int bitsToProcess;
+	//Reassemble 8 bit to output bit size//
+	for (int i = 0; i < _config.indx_bit_count; ++i)
 	{
-		uint8_t byte = (uint8_t)c;
-		_buffer[0].push_back((uint16_t)byte);
+		indexMask |= 1 << i;
 	}
-
+	while (file.get(byte))
+	{
+		bitsToProcess = byteSize;
+		while (bitsToProcess > 0)
+		{
+			//Gather remainder bits from previous stage//
+			higherMask = (indexMask >> shift) << shift;
+			lowerMask = indexMask ^ higherMask;
+			uint32_t noBitsToWrite = byteSize + shift;
+			uint32_t newDataBits = _config.indx_bit_count - shift;
+			if (noBitsToWrite >= _config.indx_bit_count)
+			{
+				outputIndex = lowerMask & remainder;
+				outputIndex |= ((higherMask >> shift) & byte) << shift;
+				_buffer[0].push_back((uint16_t)outputIndex);
+				remainder = byte >> newDataBits;
+				shift = byteSize - newDataBits;
+				bitsToProcess -= _config.indx_bit_count;
+			}
+			else
+			{
+				remainder |= byte << shift;
+				shift += byteSize;
+				bitsToProcess -= 8;
+			}
+		}
+	}
 }
 LZWCompressHeader DataReader::getConfig()
 {
