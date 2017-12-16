@@ -18,15 +18,16 @@ void HashDictionary::initializeAlphabet()
 {
 	for (_currentIndexNumber; _currentIndexNumber < _alphabetSize; ++_currentIndexNumber)
 	{
-		_container[vector<uint16_t>{static_cast<uint16_t>(_currentIndexNumber)}] = _currentIndexNumber;
+		_container[basic_string<char16_t>{static_cast<uint16_t>(_currentIndexNumber)}] = _currentIndexNumber;
 	}
 }
 
 bool HashDictionary::getIndex(std::vector<uint16_t>& word, uint32_t& index)
 {
 	bool state;
-	auto containerElement = _container.find(word);
+	basic_string<char16_t> stringWord(word.begin(), word.end());
 
+	auto containerElement = _container.find(stringWord);
 	if (containerElement == _container.end() || containerElement->second > _maxIndexNumber)
 	{
 		state = false;
@@ -42,6 +43,7 @@ bool HashDictionary::getIndex(std::vector<uint16_t>& word, uint32_t& index)
 
 uint32_t HashDictionary::insertEntry(std::vector<uint16_t>& word)
 {
+	basic_string<char16_t> stringWord(word.begin(), word.end());
 	if (_currentIndexNumber > _maxIndexNumber)
 	{
 		flush();
@@ -49,7 +51,7 @@ uint32_t HashDictionary::insertEntry(std::vector<uint16_t>& word)
 	}
 	else
 	{
-		_container[word] = _currentIndexNumber;
+		_container[stringWord] = _currentIndexNumber;
 		return _currentIndexNumber++;
 	}
 }
@@ -60,7 +62,7 @@ bool HashDictionary::getEntry(uint32_t index, std::vector<uint16_t>& word)
 	{
 		if (pair.second == index)
 		{
-			word = pair.first;
+			word = vector<uint16_t>{ pair.first.begin(), pair.first.end() };
 			return true;
 		}
 	}

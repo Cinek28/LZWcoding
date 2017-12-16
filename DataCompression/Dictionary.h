@@ -15,10 +15,10 @@ public:
 	virtual bool getEntry(uint32_t index, std::vector<uint16_t>& word) = 0;
 
 	uint32_t getOverflowFlag();
+	virtual void flush() = 0;
 
 protected:
 	virtual void initializeAlphabet() = 0;
-	virtual void flush() = 0;
 
 	void initializeValues();
 

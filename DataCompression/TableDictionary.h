@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Dictionary.h"
-
+#include <string>
 
 class TableDictionary final : public Dictionary
 {
@@ -14,10 +14,11 @@ public:
 	uint32_t insertEntry(std::vector<uint16_t>& word) override;
 	bool getEntry(uint32_t index, std::vector<uint16_t>& word) override;
 
-
-	void initializeAlphabet() override;
 	void flush() override;
 
-	std::vector<std::vector<uint16_t>> _container;
+private:
+	void initializeAlphabet() override;
+
+	std::vector<std::basic_string<char16_t> > _container;
 };
 
