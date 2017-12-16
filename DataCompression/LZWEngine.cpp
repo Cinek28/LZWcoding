@@ -5,21 +5,21 @@ int LZWEngine::Code(const char* source, const char* dest) {
 	
 	_pReader.reset(new DataReader(source));
 
-	_sCompressConfig.data_order_type = _pReader->getType().type;
-	_sCompressConfig.word_bit_count = _pReader->getType().bit_count;
-	_sCompressConfig.indx_bit_count = 2 * _pReader->getType().bit_count;
+	_sCompressConfig.data_order_type = _pReader->getConfig().data_order_type;
+	_sCompressConfig.word_bit_count = _pReader->getConfig().word_bit_count;
+	_sCompressConfig.indx_bit_count = 2 * _pReader->getConfig().indx_bit_count;
 	
-	
-	_pReader->getHeader();
-
-	auto inVec = _pReader->getBuffer();
-
 	_pDictionary.reset(new HashDictionary(_sCompressConfig.word_bit_count, _sCompressConfig.indx_bit_count));
 
-	vector<uint32_t> outVec;
-	auto i = inVec.begin();
 
-	if(i!=inVec.end()){
+	vector<uint32_t> outVec;
+	auto FileData = _pReader->getBuffer();
+
+	for(auto& inVec:FileData){
+
+		auto i = inVec.begin();
+
+		if(i!=inVec.end()){
 
 		vector<uint16_t> w {*i};
 
@@ -57,6 +57,7 @@ int LZWEngine::Code(const char* source, const char* dest) {
 		}
 	}
 
+	}
 
 	_pCoder.reset(new DataCoder(dest, _sCompressConfig.indx_bit_count));
 
