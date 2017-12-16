@@ -14,7 +14,7 @@ public:
 	~DataReader();
 
 	LZWCompressHeader getConfig();
-	std::vector<std::vector<uint16_t>>& getBuffer();
+	std::vector<std::vector<uint32_t>>& getBuffer();
 	bool isDecoding()
 	{
 		return _isDecoding;
@@ -24,7 +24,7 @@ private:
 	void readTextFile(std::ifstream &file);
 	void readLzwFile(std::ifstream &file);
 	void clearBuffer();
-	std::vector<std::vector<uint16_t>> _buffer;
+	std::vector<std::vector<uint32_t>> _buffer;
 	LZWCompressHeader _config;
 	bool _isDecoding = false;
 

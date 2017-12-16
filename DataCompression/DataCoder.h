@@ -5,6 +5,7 @@
 #include <exception>
 #include <vector>
 #include "defines.h"
+#include <bitset>
 class DataCoder
 {
 public:

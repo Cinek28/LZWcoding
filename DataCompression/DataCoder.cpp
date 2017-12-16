@@ -7,7 +7,9 @@ using std::ios;
 using std::vector;
 
 DataCoder::DataCoder(string filename, uint8_t outputBitSize):
-	_outputBitSize(outputBitSize)
+	_outputBitSize(outputBitSize),
+	_shiftRemainder(0),
+	_dataRemainder(0)
 {
 	if (outputBitSize > MAX_OUTPUT_BIT_SIZE)
 		throw std::out_of_range("Output bit size is out of range");
@@ -77,6 +79,10 @@ void DataCoder::writeIndex(uint32_t index)
 		dataByte |= ((higherMask >> _shiftRemainder) & (index >> dataBitsWritten)) << _shiftRemainder;
 		dataBitsWritten += newDataBits;
 		bitsToWrite -= _byteSize;
+
+		//std::bitset<8> x(dataByte);
+		//std::cout << "wbyte: " << x << std::endl;
+
 		_file.put(dataByte);
 		if (bitsToWrite < _byteSize)
 		{
