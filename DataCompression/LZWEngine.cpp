@@ -8,7 +8,9 @@ int LZWEngine::Code(const char* source, const char* dest) {
 	_sCompressConfig.data_order_type = _pReader->getType().type;
 	_sCompressConfig.word_bit_count = _pReader->getType().bit_count;
 	_sCompressConfig.indx_bit_count = 2 * _pReader->getType().bit_count;
-
+	
+	
+	_pReader->getHeader();
 
 	auto inVec = _pReader->getBuffer();
 
