@@ -12,52 +12,54 @@ int LZWEngine::Code(const char* source, const char* dest) {
 	_pDictionary.reset(new HashDictionary(_sCompressConfig.word_bit_count, _sCompressConfig.indx_bit_count));
 
 
-	vector<uint32_t> outVec;
+	vector<uint32_t> codeVector;
 	auto FileData = _pReader->getBuffer();
 
 	for(auto& inVec:FileData){
 
-		auto i = inVec.begin();
+		auto inputElement = inVec.begin();
 
-		if(i!=inVec.end()){
+		if(inputElement!=inVec.end()){
 
-		vector<uint16_t> w {*i};
+		vector<uint16_t> newDictionaryWord {*inputElement};
 
 		while(1)
 		{
-			++i;
+			++inputElement;
 
-			if(i==inVec.end()){
-				uint32_t indx;
-				auto bRes=_pDictionary->getIndex(w, indx);
+			if(inputElement==inVec.end()){
+				uint32_t currentOutputIndex;
+				bool wordExistence=_pDictionary->getIndex(newDictionaryWord, currentOutputIndex);
 				
-				if(!bRes)
+				if(!wordExistence)
 					throw std::logic_error("Can't get entry for the last symbol");
-				outVec.push_back(indx);
+				codeVector.push_back(currentOutputIndex);
 				
 				break;
 			}
 		
-			w.push_back(*i);
+			// TO DO: flush after header
+			newDictionaryWord.push_back(*inputElement);
 
-			uint32_t indx;
-			if (!_pDictionary->getIndex(w, indx)) 
+			uint32_t currentOutputIndex;
+			if (!_pDictionary->getIndex(newDictionaryWord, currentOutputIndex)) 
 			{
-				w.pop_back();
-				auto bRes=_pDictionary->getIndex(w, indx);				
+				newDictionaryWord.pop_back();
+				bool wordExistence=_pDictionary->getIndex(newDictionaryWord, currentOutputIndex);				
 				
-				if(!bRes)
+				if(!wordExistence)
 					throw std::logic_error("Can't get entry symbol");
-				outVec.push_back(indx);
+				codeVector.push_back(currentOutputIndex);
 
-				w.push_back(*i);
-				auto retOvf = _pDictionary->insertEntry(w);
-				if (retOvf==~(0 << 31)){
-					_pDictionary->insertEntry(w);
+				newDictionaryWord.push_back(*inputElement);
+				auto overflowFlag = _pDictionary->insertEntry(newDictionaryWord);
+				
+				if (overflowFlag == _pDictionary->getOverflowFlag()){
+					_pDictionary->insertEntry(newDictionaryWord); // New word is inserted to new dictionary.
 				}
 
-				w.clear();
-				w.push_back(*i);
+				newDictionaryWord.clear();
+				newDictionaryWord.push_back(*inputElement);
 			}
 
 
@@ -69,7 +71,7 @@ int LZWEngine::Code(const char* source, const char* dest) {
 
 	_pCoder.reset(new DataCoder(dest, _sCompressConfig.indx_bit_count));
 	_pCoder->writeCompressionHeader(_sCompressConfig);
-	for (const auto& i : outVec)
+	for (const auto& i : codeVector)
 		_pCoder->writeIndex(i);
 	
 
@@ -77,7 +79,7 @@ int LZWEngine::Code(const char* source, const char* dest) {
 	for (const auto& v : FileData) {
 		insize += v.size();
 	}
-	printf("\nCompress succeded\n raw data size=%llu\n compressed data size=%llu\n\n", insize, outVec.size());
+	printf("\nCompress succeded\n raw data size=%llu\n compressed data size=%llu\n\n", insize, codeVector.size());
 
 	return 0;
 }
