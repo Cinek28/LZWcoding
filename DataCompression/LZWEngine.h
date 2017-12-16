@@ -12,11 +12,7 @@ public:
 	int Code(const char* source, const char* dest);
 	int Decode(const char* source, const char* dest);
 private:
-	struct CompressConfig {
-		uint8_t word_bit_count;
-		uint8_t indx_bit_count;
-		DataReader::ReadTypeEnum data_order_type;
-	} _sCompressConfig;
+	LZWCompressHeader _sCompressConfig;
 
 	unique_ptr<DataReader> _pReader;
 	unique_ptr<Dictionary> _pDictionary;

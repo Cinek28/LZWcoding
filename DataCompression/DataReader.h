@@ -5,22 +5,19 @@
 #include <fstream>
 #include <stdexcept>
 #include <sstream>
+#include "defines.h"
 
 class DataReader
 {
 public:
 	DataReader(std::string filename);
 	~DataReader();
-	typedef enum ReadTypeEnum {
-		Linear,
-		Split3Color,
-		LinearAscii,
-		Unimplemented
-	};
-	typedef struct ReadConfigStruct {
+	
+	struct ReadConfigStruct {
 		ReadTypeEnum type;
 		uint8_t bit_count;
 	};
+
 	ReadConfigStruct getType();
 	std::vector<uint16_t>& getBuffer();
 	std::vector<uint8_t>& getHeader();
