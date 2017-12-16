@@ -15,9 +15,9 @@ public:
 	uint32_t insertEntry(std::vector<uint16_t>& word) override;
 	bool getEntry(uint32_t index, std::vector<uint16_t>& word) override;
 
+	void flush() override;
 private:
 	void initializeAlphabet() override;
-	void flush() override;
 
 	std::unordered_map< std::basic_string<char16_t>, uint32_t > _container;
 };
