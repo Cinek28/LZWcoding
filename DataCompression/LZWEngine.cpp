@@ -7,7 +7,7 @@ int LZWEngine::Code(const char* source, const char* dest) {
 
 	_sCompressConfig.data_order_type = _pReader->getConfig().data_order_type;
 	_sCompressConfig.word_bit_count = _pReader->getConfig().word_bit_count;
-	_sCompressConfig.indx_bit_count = 2 * _pReader->getConfig().indx_bit_count;
+	_sCompressConfig.indx_bit_count = 14;
 	
 	_pDictionary.reset(new HashDictionary(_sCompressConfig.word_bit_count, _sCompressConfig.indx_bit_count));
 
@@ -57,6 +57,7 @@ int LZWEngine::Code(const char* source, const char* dest) {
 		}
 	}
 
+		_pDictionary->flush();
 	}
 
 	_pCoder.reset(new DataCoder(dest, _sCompressConfig.indx_bit_count));
@@ -131,7 +132,7 @@ int LZWEngine::Decode(const char* source, const char* dest) {
 		}
 	}
 
-	for (int i = 0; i < inVec.size(); ++i) {
+	/*for (int i = 0; i < inVec.size(); ++i) {
 		if (inVec[i] != outVec_decode[i])
 			std::cout << "Element N*" << i << " not equal \n";
 	}*/
