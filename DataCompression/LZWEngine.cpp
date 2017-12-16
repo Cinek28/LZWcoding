@@ -15,58 +15,64 @@ int LZWEngine::Code(const char* source, const char* dest) {
 	vector<uint32_t> codeVector;
 	auto FileData = _pReader->getBuffer();
 
-	for(auto& inVec:FileData){
+	vector<uint16_t> newDictionaryWord;
 
-		auto inputElement = inVec.begin();
+	bool tempFlag = true;
 
-		if(inputElement!=inVec.end()){
+	for(auto& inVec:FileData)
+	{
+			auto inputElement = inVec.begin();
 
-		vector<uint16_t> newDictionaryWord {*inputElement};
+			if(inputElement!=inVec.end()){
 
-		while(1)
-		{
-			++inputElement;
-
-			if(inputElement==inVec.end()){
-				uint32_t currentOutputIndex;
-				bool wordExistence=_pDictionary->getIndex(newDictionaryWord, currentOutputIndex);
-				
-				if(!wordExistence)
-					throw std::logic_error("Can't get entry for the last symbol");
-				codeVector.push_back(currentOutputIndex);
-				
-				break;
-			}
-		
-			// TO DO: flush after header
-			newDictionaryWord.push_back(*inputElement);
-
-			uint32_t currentOutputIndex;
-			if (!_pDictionary->getIndex(newDictionaryWord, currentOutputIndex)) 
-			{
-				newDictionaryWord.pop_back();
-				bool wordExistence=_pDictionary->getIndex(newDictionaryWord, currentOutputIndex);				
-				
-				if(!wordExistence)
-					throw std::logic_error("Can't get entry symbol");
-				codeVector.push_back(currentOutputIndex);
-
-				newDictionaryWord.push_back(*inputElement);
-				auto overflowFlag = _pDictionary->insertEntry(newDictionaryWord);
-				
-				if (overflowFlag == _pDictionary->getOverflowFlag()){
-					_pDictionary->insertEntry(newDictionaryWord); // New word is inserted to new dictionary.
+			// Coding without flush after new data block from FileData
+			//vector<uint16_t> newDictionaryWord {static_cast<uint16_t>(*inputElement)};
+				if (tempFlag)
+				{
+					newDictionaryWord.push_back(static_cast<uint16_t>(*inputElement));
+					tempFlag = false;
 				}
 
-				newDictionaryWord.clear();
+			while(1)
+			{
+				++inputElement;
+
+				if(inputElement==inVec.end()){
+					uint32_t currentOutputIndex;
+					bool wordExistence=_pDictionary->getIndex(newDictionaryWord, currentOutputIndex);
+				
+					if(!wordExistence)
+						throw std::logic_error("Can't get entry for the last symbol");
+					codeVector.push_back(currentOutputIndex);
+				
+					break;
+				}
+		
 				newDictionaryWord.push_back(*inputElement);
+
+				uint32_t currentOutputIndex;
+				if (!_pDictionary->getIndex(newDictionaryWord, currentOutputIndex)) 
+				{
+					newDictionaryWord.pop_back();
+					bool wordExistence=_pDictionary->getIndex(newDictionaryWord, currentOutputIndex);				
+				
+					if(!wordExistence)
+						throw std::logic_error("Can't get entry symbol");
+					codeVector.push_back(currentOutputIndex);
+
+					newDictionaryWord.push_back(*inputElement);
+					auto overflowFlag = _pDictionary->insertEntry(newDictionaryWord);
+				
+					if (overflowFlag == _pDictionary->getOverflowFlag()){
+						_pDictionary->insertEntry(newDictionaryWord); // New word is inserted to new dictionary.
+					}
+
+					newDictionaryWord.clear();
+					newDictionaryWord.push_back(*inputElement);
+				}
 			}
-
-
 		}
-	}
-
-		_pDictionary->flush();
+		//_pDictionary->flush();
 	}
 
 	_pCoder.reset(new DataCoder(dest, _sCompressConfig.indx_bit_count));
@@ -86,8 +92,6 @@ int LZWEngine::Code(const char* source, const char* dest) {
 
 
 int LZWEngine::Decode(const char* source, const char* dest) {
-
-	////Decode_TEST////
 
 	_pReader.reset(new DataReader(source));
 
