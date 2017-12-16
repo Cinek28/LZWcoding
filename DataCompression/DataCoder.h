@@ -11,8 +11,7 @@ public:
 	DataCoder(std::string filename, uint8_t outputBitSize);
 	~DataCoder();
 	void writeIndex(uint32_t index);
-	void writeCompressionHeader(/*Placeholder for some structure maybe*/);
-	void writeUncompressedData(std::vector<uint8_t> header);
+	void writeCompressionHeader(LZWCompressHeader header);
 private:
 	std::ofstream _file;
 	const uint8_t _byteSize = 8;
