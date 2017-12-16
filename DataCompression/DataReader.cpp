@@ -23,6 +23,10 @@ DataReader::DataReader(string filename)
 	{
 		readPgmFile(file);
 	}
+	else if (extension == ".lzw")
+	{
+		_readLzwFile(file);
+	}
 	else
 	{
 		_config.bit_count = 8;
@@ -46,6 +50,7 @@ void DataReader::readTextFile(std::ifstream &file)
 		_buffer.push_back((uint16_t)byte);
 	}
 }
+
 void DataReader::readPgmFile(std::ifstream &file)
 {
 	_config.bit_count = 8;
@@ -111,6 +116,26 @@ void DataReader::readPgmFile(std::ifstream &file)
 				_buffer.push_back((uint16_t)colors[i][j]);
 			}
 	}
+}
+
+void DataReader::readLzwFile(std::ifstream &file)
+{
+	/*
+	//Read up the input structure//
+	//first byte is the input structure byte size//
+	uint8_t comp_header_size = 0;
+	if (!file.get((char&)comp_header_size))
+		throw std::invalid_argument("File empty");
+	//Read compression header//
+	if (comp_header_size != sizeof(heder))
+		throw std::invalid_argument("Compression header incompatible");
+	heder compHeader;
+	char *charHeader = reinterpret_cast<
+	for (int i = 0; i < comp_header_size; ++i)
+	{
+		 
+	}*/
+
 }
 DataReader::ReadConfigStruct DataReader::getType()
 {
