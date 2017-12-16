@@ -14,7 +14,7 @@ DataReader::DataReader(string filename)
 	ifstream file(filename, ios::in | ios::binary | ios::beg);
 	if (!file.is_open())
 		throw std::invalid_argument("File does not exist");
-
+	clearBuffer();
 	if (extension == ".txt")
 	{
 		readTextFile(file);
@@ -35,19 +35,26 @@ DataReader::DataReader(string filename)
 	file.close();
 }
 
-
+void DataReader::clearBuffer()
+{
+	for (int i = 0; i < _buffer.size(); ++i)
+		_buffer[i].clear();
+	_buffer.clear();
+}
 DataReader::~DataReader()
 {
+	clearBuffer();
 }
 void DataReader::readTextFile(std::ifstream &file)
 {
 	_config.word_bit_count = 8;
 	_config.data_order_type = ReadTypeEnum::LinearAscii;
+	_buffer.push_back(vector<uint16_t>());
 	char c;
 	while (file.get(c))
 	{
 		uint8_t byte = (uint8_t)c;
-		_buffer.push_back((uint16_t)byte);
+		_buffer[0].push_back((uint16_t)byte);
 	}
 }
 
@@ -55,7 +62,7 @@ void DataReader::readPgmFile(std::ifstream &file)
 {
 	_config.word_bit_count = 8;
 	_config.data_order_type = ReadTypeEnum::Linear;
-
+	_buffer.push_back(vector<uint16_t>());
 	//read and copy header info of pgm file//
 	int PGM_HEADER_LINES = 3;
 	int pgm_maxval = 255;
@@ -73,9 +80,9 @@ void DataReader::readPgmFile(std::ifstream &file)
 		}
 		for (int j = 0; j < line.size(); ++j)
 		{
-			_header.push_back(line[j]);
+			_buffer[0].push_back(line[j]);
 		}
-		_header.push_back('\n');
+		_buffer[0].push_back('\n');
 		if (line[0] == '#')
 		{
 			//Handle comment lines//
@@ -92,12 +99,13 @@ void DataReader::readPgmFile(std::ifstream &file)
 		_config.data_order_type = ReadTypeEnum::Split3Color;
 	}
 	//Get values to the buffer and reassemble as correct bitness//
+	_buffer.push_back(vector<uint16_t>());
 	char c;
 	if (_config.data_order_type = ReadTypeEnum::Linear)
 		while (file.get(c))
 		{
 			uint8_t byte = (uint8_t)c;
-			_buffer.push_back((uint16_t)byte);
+			_buffer[1].push_back((uint16_t)byte);
 		}
 	else if (_config.data_order_type = ReadTypeEnum::Split3Color)
 	{
@@ -113,7 +121,7 @@ void DataReader::readPgmFile(std::ifstream &file)
 		for (int i = 0; i < 3; ++i)
 			for (int j = 0; j < colors[i].size(); ++j)
 			{
-				_buffer.push_back((uint16_t)colors[i][j]);
+				_buffer[1].push_back((uint16_t)colors[i][j]);
 			}
 	}
 }
@@ -139,10 +147,11 @@ void DataReader::readLzwFile(std::ifstream &file)
 		 charHeader[i] = c;
 	}
 	_config = compHeader;
+	_buffer.push_back(vector<uint16_t>());
 	while (file.get(c))
 	{
 		uint8_t byte = (uint8_t)c;
-		_buffer.push_back((uint16_t)byte);
+		_buffer[0].push_back((uint16_t)byte);
 	}
 
 }
@@ -150,11 +159,7 @@ LZWCompressHeader DataReader::getConfig()
 {
 	return _config;
 }
-vector<uint16_t>& DataReader::getBuffer()
+vector<std::vector<uint16_t>>& DataReader::getBuffer()
 {
 	return _buffer;
-}
-vector<uint8_t>& DataReader::getHeader()
-{
-	return _header;
 }
