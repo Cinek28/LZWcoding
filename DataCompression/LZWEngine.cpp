@@ -30,7 +30,11 @@ int LZWEngine::Code(const char* source, const char* dest) {
 			if(i==inVec.end()){
 				uint32_t indx;
 				auto bRes=_pDictionary->getIndex(w, indx);
-				bRes == true ? outVec.push_back(indx) : throw std::logic_error("Can't get entry for the last symbol");
+				
+				if(!bRes)
+					throw std::logic_error("Can't get entry for the last symbol");
+				outVec.push_back(indx);
+				
 				break;
 			}
 		
@@ -40,8 +44,11 @@ int LZWEngine::Code(const char* source, const char* dest) {
 			if (!_pDictionary->getIndex(w, indx)) 
 			{
 				w.pop_back();
-				auto bRes=_pDictionary->getIndex(w, indx);
-				bRes == true ? outVec.push_back(indx) : throw std::logic_error("Can't get entry symbol");
+				auto bRes=_pDictionary->getIndex(w, indx);				
+				
+				if(!bRes)
+					throw std::logic_error("Can't get entry symbol");
+				outVec.push_back(indx);
 
 				w.push_back(*i);
 				auto retOvf = _pDictionary->insertEntry(w);
