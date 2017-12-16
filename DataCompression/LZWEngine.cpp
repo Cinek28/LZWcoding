@@ -102,62 +102,63 @@ int LZWEngine::Decode(const char* source, const char* dest) {
 
 	auto FileData=_pReader->getBuffer();
 
-	vector<uint16_t> outVec;
+	vector<uint16_t> decompressedVector;
 
 	for(auto& inVec:FileData){
 
-		auto i_dec = inVec.begin();
+		auto inputElement = inVec.begin();
 
-		if (i_dec != inVec.end()) {
+		if (inputElement != inVec.end()) {
 
 
-			vector<uint16_t> N;
-			vector<uint16_t> W;
+			vector<uint16_t> newWord;
+			vector<uint16_t> currentWord;
 
-			bool bresf = _pDictionary->getEntry(*i_dec, N);
-			if (!bresf)
+			bool indexExistence = _pDictionary->getEntry(*inputElement, newWord);
+			if (!indexExistence)
 				throw std::logic_error("Can't get word for the first index");
-			outVec.insert(outVec.end(), N.begin(), N.end());
+			decompressedVector.insert(decompressedVector.end(), newWord.begin(), newWord.end());
 
 			int n_it = 1;
 			while (1)
 			{
 				++n_it;
-				++i_dec;
+				++inputElement;
 
-				if (i_dec == inVec.end()) {
+				if (inputElement == inVec.end()) {
 					break;
 				}
 
 
-				bool res = _pDictionary->getEntry(*i_dec, W);
-				if (res) {
-					outVec.insert(outVec.end(), W.begin(), W.end());
-					N.push_back(W.front());
-					auto ovf = _pDictionary->insertEntry(N);
-					if (ovf == ~(0 << 31))
-						_pDictionary->insertEntry(N);
+				indexExistence = _pDictionary->getEntry(*inputElement, currentWord);
+				if (indexExistence) {
+					decompressedVector.insert(decompressedVector.end(), currentWord.begin(), currentWord.end());
+					newWord.push_back(currentWord.front());
 
-					N = W;
+					auto overflowFlag = _pDictionary->insertEntry(newWord);
+					if (overflowFlag == _pDictionary->getOverflowFlag())
+						_pDictionary->insertEntry(newWord);
+
+					newWord = currentWord;
 				}
 				else {
 
-					auto i_tmp = i_dec - 1;
-					vector<uint16_t> W_tmp;
+					auto previousInputElement = inputElement - 1;
+					vector<uint16_t> previousWord;
 
-					bool res = _pDictionary->getEntry(*i_tmp, W_tmp);
-					if (!res)
+					indexExistence = _pDictionary->getEntry(*previousInputElement, previousWord);
+					if (!indexExistence)
 						throw std::logic_error("Can't get word for the index in critical situation");
 
-					auto W_new = W_tmp;
-					W_new.push_back(W_tmp.front());
+					auto newCriticalWord = previousWord;
+					newCriticalWord.push_back(previousWord.front());
 
-					outVec.insert(outVec.end(), W_new.begin(), W_new.end());
+					decompressedVector.insert(decompressedVector.end(), newCriticalWord.begin(), newCriticalWord.end());
 
-					auto ovf = _pDictionary->insertEntry(W_new);
-					if (ovf == ~(0 << 31))
-						_pDictionary->insertEntry(W_new);
-					N = W_new;
+					auto overflowFlag = _pDictionary->insertEntry(newCriticalWord);
+					if (overflowFlag == _pDictionary->getOverflowFlag())
+						_pDictionary->insertEntry(newCriticalWord);
+					newWord = newCriticalWord;
 				}
 		}
 	}
@@ -169,7 +170,7 @@ int LZWEngine::Decode(const char* source, const char* dest) {
 	for (const auto& v : FileData) {
 		insize += v.size();
 	}
-	printf("\nDecompress succeded\n compressed data size=%llu\n decompressed data size=%llu\n\n", insize, outVec.size());
+	printf("\nDecompress succeded\n compressed data size=%llu\n decompressed data size=%llu\n\n", insize, decompressedVector.size());
 
 
 	return 0;
