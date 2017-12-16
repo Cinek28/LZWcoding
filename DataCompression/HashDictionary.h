@@ -1,6 +1,8 @@
 #pragma once
 #include "Dictionary.h"
-#include <map>
+
+#include <unordered_map>
+#include <string>
 
 class HashDictionary final : public Dictionary
 {
@@ -17,7 +19,6 @@ private:
 	void initializeAlphabet() override;
 	void flush() override;
 
-	std::map< std::vector<uint16_t>, uint32_t > _container;
-
+	std::unordered_map< std::basic_string<char16_t>, uint32_t > _container;
 };
 

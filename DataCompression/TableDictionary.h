@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Dictionary.h"
-
+#include <string>
 
 class TableDictionary final : public Dictionary
 {
@@ -18,6 +18,6 @@ public:
 	void initializeAlphabet() override;
 	void flush() override;
 
-	std::vector<std::vector<uint16_t>> _container;
+	std::vector<std::basic_string<char16_t> > _container;
 };
 
