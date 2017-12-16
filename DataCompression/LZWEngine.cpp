@@ -64,7 +64,13 @@ int LZWEngine::Code(const char* source, const char* dest) {
 	_pCoder->writeCompressionHeader(_sCompressConfig);
 	for (const auto& i : outVec)
 		_pCoder->writeIndex(i);
+	
 
+	size_t insize = 0;
+	for (const auto& v : FileData) {
+		insize += v.size();
+	}
+	printf("\nCompress succeded\n raw data size=%llu\n compressed data size=%llu\n\n", insize, outVec.size());
 
 	return 0;
 }
@@ -73,70 +79,89 @@ int LZWEngine::Code(const char* source, const char* dest) {
 int LZWEngine::Decode(const char* source, const char* dest) {
 
 	////Decode_TEST////
-	/*unique_ptr<TableDictionary> tmp_d(new TableDictionary(inType.bit_count, out_bit_size));
 
-	vector<uint16_t> outVec_decode;
-	auto i_dec = outVec.begin();
+	_pReader.reset(new DataReader(source));
 
-	if (i_dec != outVec.end()) {
+	if (!_pReader->isDecoding())
+		return -1;
 
+	_sCompressConfig.data_order_type = _pReader->getConfig().data_order_type;
+	_sCompressConfig.word_bit_count = _pReader->getConfig().word_bit_count;
+	_sCompressConfig.indx_bit_count = _pReader->getConfig().indx_bit_count;
 
-		vector<uint16_t> N;
-		vector<uint16_t> W;
+	_pDictionary.reset(new TableDictionary(_sCompressConfig.word_bit_count, _sCompressConfig.indx_bit_count));
 
-		bool bresf = tmp_d->getEntry(*i_dec, N);
-		if (!bresf)
-			throw std::logic_error("Can't get word for the first index");
-		outVec_decode.insert(outVec_decode.begin(), N.begin(), N.end());
+	auto FileData=_pReader->getBuffer();
 
-		int n_it = 1;
-		while (1)
-		{
-			++n_it;
-			++i_dec;
+	vector<uint16_t> outVec;
 
-			if (i_dec == outVec.end()) {
-				break;
-			}
+	for(auto& inVec:FileData){
+
+		auto i_dec = inVec.begin();
+
+		if (i_dec != inVec.end()) {
 
 
-			bool res = tmp_d->getEntry(*i_dec, W);
-			if (res) {
-				outVec_decode.insert(outVec_decode.end(), W.begin(), W.end());
-				N.push_back(W.front());
-				auto ovf = tmp_d->insertEntry(N);
-				if (ovf == ~(0 << 31))
-					tmp_d->insertEntry(N);
+			vector<uint16_t> N;
+			vector<uint16_t> W;
 
-				N = W;
-			}
-			else {
+			bool bresf = _pDictionary->getEntry(*i_dec, N);
+			if (!bresf)
+				throw std::logic_error("Can't get word for the first index");
+			outVec.insert(outVec.end(), N.begin(), N.end());
 
-				auto i_tmp = i_dec - 1;
-				vector<uint16_t> W_tmp;
+			int n_it = 1;
+			while (1)
+			{
+				++n_it;
+				++i_dec;
 
-				bool res = tmp_d->getEntry(*i_tmp, W_tmp);
-				if (!res)
-					throw std::logic_error("Can't get word for the index in critical situation");
+				if (i_dec == inVec.end()) {
+					break;
+				}
 
-				auto W_new = W_tmp;
-				W_new.push_back(W_tmp.front());
 
-				outVec_decode.insert(outVec_decode.end(), W_new.begin(), W_new.end());
+				bool res = _pDictionary->getEntry(*i_dec, W);
+				if (res) {
+					outVec.insert(outVec.end(), W.begin(), W.end());
+					N.push_back(W.front());
+					auto ovf = _pDictionary->insertEntry(N);
+					if (ovf == ~(0 << 31))
+						_pDictionary->insertEntry(N);
 
-				auto ovf = tmp_d->insertEntry(W_new);
-				if (ovf == ~(0 << 31))
-					tmp_d->insertEntry(W_new);
-				N = W_new;
-			}
+					N = W;
+				}
+				else {
+
+					auto i_tmp = i_dec - 1;
+					vector<uint16_t> W_tmp;
+
+					bool res = _pDictionary->getEntry(*i_tmp, W_tmp);
+					if (!res)
+						throw std::logic_error("Can't get word for the index in critical situation");
+
+					auto W_new = W_tmp;
+					W_new.push_back(W_tmp.front());
+
+					outVec.insert(outVec.end(), W_new.begin(), W_new.end());
+
+					auto ovf = _pDictionary->insertEntry(W_new);
+					if (ovf == ~(0 << 31))
+						_pDictionary->insertEntry(W_new);
+					N = W_new;
+				}
 		}
 	}
+	}
 
-	/*for (int i = 0; i < inVec.size(); ++i) {
-		if (inVec[i] != outVec_decode[i])
-			std::cout << "Element N*" << i << " not equal \n";
-	}*/
-	//////////////////
+
+
+	size_t insize = 0;
+	for (const auto& v : FileData) {
+		insize += v.size();
+	}
+	printf("\nDecompress succeded\n compressed data size=%llu\n decompressed data size=%llu\n\n", insize, outVec.size());
+
 
 	return 0;
 }
