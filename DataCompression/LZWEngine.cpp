@@ -60,7 +60,7 @@ int LZWEngine::Code(const char* source, const char* dest) {
 	}
 
 	_pCoder.reset(new DataCoder(dest, _sCompressConfig.indx_bit_count));
-
+	_pCoder->writeCompressionHeader(_sCompressConfig);
 	for (const auto& i : outVec)
 		_pCoder->writeIndex(i);
 
