@@ -138,11 +138,11 @@ void DataReader::readLzwFile(std::ifstream &file)
 	if (comp_header_size != sizeof(LZWCompressHeader))
 		throw std::invalid_argument("Compression header incompatible");
 	LZWCompressHeader compHeader;
-	char byte;
+	uint8_t byte;
 	char *charHeader = reinterpret_cast<char*>(&compHeader);
 	for (int i = 0; i < comp_header_size; ++i)
 	{
-		 if(!file.get(byte))
+		 if(!file.get((char&)byte))
 			 throw std::invalid_argument("File finished prematurely");
 		 charHeader[i] = byte;
 	}
@@ -160,8 +160,11 @@ void DataReader::readLzwFile(std::ifstream &file)
 	{
 		indexMask |= 1 << i;
 	}
-	while (file.get(byte))
+	while (file.get((char&)byte))
 	{
+
+		//std::bitset<8> x(byte);
+		//std::cout<<"R: " << x << std::endl;
 		bitsToProcess = byteSize;
 		while (bitsToProcess > 0)
 		{
@@ -175,15 +178,28 @@ void DataReader::readLzwFile(std::ifstream &file)
 				outputIndex = lowerMask & remainder;
 				outputIndex |= ((higherMask >> shift) & byte) << shift;
 				_buffer[0].push_back((uint32_t)outputIndex);
-				remainder = byte >> newDataBits;
+				remainder = (byte & 0xFF) >> newDataBits;
 				shift = byteSize - newDataBits;
 				bitsToProcess -= _config.indx_bit_count;
+				//std::bitset<14> x(outputIndex);
+				//std::cout << "A: " << x << " - " << outputIndex << std::endl;
+				//std::bitset<14> y(remainder);
+				//std::cout << "S: ";
+				//for (int i = shift-1; i >= 0; --i)
+				//	std::cout << y[i];
+				//std::cout << std::endl;
 			}
 			else
 			{
 				remainder |= byte << shift;
 				shift += byteSize;
 				bitsToProcess -= 8;
+
+				//std::bitset<14> x(remainder );
+				//std::cout << "S: ";
+				//for (int i = shift-1; i >= 0; --i)
+				//	std::cout << x[i];
+				//std::cout <<std::endl;
 			}
 		}
 	}

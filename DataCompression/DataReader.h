@@ -5,6 +5,7 @@
 #include <fstream>
 #include <stdexcept>
 #include <sstream>
+#include <bitset>
 #include "defines.h"
 
 class DataReader
