@@ -1,5 +1,8 @@
 #include "LZWEngine.h"
 
+//std::vector<uint32_t> code_test;
+//std::vector<uint32_t> data_test;
+
 int LZWEngine::Code(const char* source, const char* dest) {
 
 	
@@ -17,27 +20,34 @@ int LZWEngine::Code(const char* source, const char* dest) {
 
 	vector<uint16_t> newDictionaryWord;
 
-	bool tempFlag = true;
+	bool tempFlag = false;
+	int dataBlockCounter = 0;
 
 	for(auto& inVec:FileData)
 	{
+			dataBlockCounter++;
 			auto inputElement = inVec.begin();
 
 			if(inputElement!=inVec.end()){
 
-			// Coding without flush after new data block from FileData
-			//vector<uint16_t> newDictionaryWord {static_cast<uint16_t>(*inputElement)};
-				if (tempFlag)
+
+				if (dataBlockCounter==1)
 				{
 					newDictionaryWord.push_back(static_cast<uint16_t>(*inputElement));
-					tempFlag = false;
+				}
+				else 
+				{
+					tempFlag = true;
 				}
 
 			while(1)
 			{
-				++inputElement;
+				if(!tempFlag)
+					++inputElement;
+				tempFlag = false;
 
-				if(inputElement==inVec.end()){
+				if(inputElement==inVec.end() && dataBlockCounter==FileData.size())
+				{
 					uint32_t currentOutputIndex;
 					bool wordExistence=_pDictionary->getIndex(newDictionaryWord, currentOutputIndex);
 				
@@ -45,6 +55,11 @@ int LZWEngine::Code(const char* source, const char* dest) {
 						throw std::logic_error("Can't get entry for the last symbol");
 					codeVector.push_back(currentOutputIndex);
 				
+					break;
+				}
+
+				if (inputElement == inVec.end())
+				{
 					break;
 				}
 		
@@ -87,6 +102,11 @@ int LZWEngine::Code(const char* source, const char* dest) {
 	}
 	printf("\nCompress succeded\n raw data size=%llu\n compressed data size=%llu\n\n", insize, codeVector.size());
 
+	///////////////////
+	//code_test = codeVector;
+	//data_test = FileData[0];
+	//data_test.insert(data_test.end(), FileData[1].begin(), FileData[1].end());
+	//////////////////
 	return 0;
 }
 
@@ -109,7 +129,9 @@ int LZWEngine::Decode(const char* source, const char* dest) {
 	vector<uint16_t> decompressedVector;
 
 	for(auto& inVec:FileData){
-
+		////////////////////////
+		/*inVec = code_test;*/
+		////////////////////////
 		auto inputElement = inVec.begin();
 
 		if (inputElement != inVec.end()) {
@@ -170,12 +192,17 @@ int LZWEngine::Decode(const char* source, const char* dest) {
 
 
 
-	size_t insize = 0;
-	for (const auto& v : FileData) {
-		insize += v.size();
-	}
-	printf("\nDecompress succeded\n compressed data size=%llu\n decompressed data size=%llu\n\n", insize, decompressedVector.size());
+	//size_t insize = 0;
+	//for (const auto& v : FileData) {
+	//	insize += v.size();
+	//}
+	//printf("\nDecompress succeded\n compressed data size=%llu\n decompressed data size=%llu\n\n", insize, decompressedVector.size());
 
+	//for (int i = 0; i < data_test.size(); ++i)
+	//{
+	//	if (data_test[i] != decompressedVector[i])
+	//		printf("\nData element %i not equal; Data val='%u' ; Decoded val='%u'\n", i, data_test[i], decompressedVector[i]);
+	//}
 
 	return 0;
 }
