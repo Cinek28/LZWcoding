@@ -96,7 +96,8 @@ void DataReader::readPgmFile(std::ifstream &file)
 	}
 	if (pgm_type == "P6")
 	{
-		_config.data_order_type = ReadTypeEnum::Split3Color;
+		//_config.data_order_type = ReadTypeEnum::Split3Color; - currently niot implemented in coder (for decompression)
+		_config.data_order_type = ReadTypeEnum::Linear
 	}
 	//Get values to the buffer and reassemble as correct bitness//
 	_buffer.push_back(vector<uint32_t>());
