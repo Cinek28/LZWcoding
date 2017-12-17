@@ -101,7 +101,7 @@ int LZWEngine::Code(const char* source, const char* dest) {
 		insize += v.size();
 	}
 	printf("\nCompress succeded\n raw data size=%llu\n compressed data size=%llu\n\n", insize, codeVector.size());
-
+	_pCoder.reset();
 	///////////////////
 	//code_test = codeVector;
 	//data_test = FileData[0];
@@ -191,7 +191,10 @@ int LZWEngine::Decode(const char* source, const char* dest) {
 	}
 
 
-
+	_pCoder.reset(new DataCoder(dest, 8));
+	for (const auto& i : decompressedVector)
+		_pCoder->writeIndex(i);
+	_pCoder.reset();
 	//size_t insize = 0;
 	//for (const auto& v : FileData) {
 	//	insize += v.size();
