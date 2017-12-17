@@ -102,13 +102,13 @@ void DataReader::readPgmFile(std::ifstream &file)
 	//Get values to the buffer and reassemble as correct bitness//
 	_buffer.push_back(vector<uint32_t>());
 	char c;
-	if (_config.data_order_type = ReadTypeEnum::Linear)
+	if (_config.data_order_type == ReadTypeEnum::Linear)
 		while (file.get(c))
 		{
 			uint8_t byte = (uint8_t)c;
 			_buffer[1].push_back((uint32_t)byte);
 		}
-	else if (_config.data_order_type = ReadTypeEnum::Split3Color)
+	else if (_config.data_order_type == ReadTypeEnum::Split3Color)
 	{
 		vector<uint8_t> colors[3];
 		int color = 0;
