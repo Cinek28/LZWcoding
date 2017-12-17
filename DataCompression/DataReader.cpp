@@ -11,7 +11,7 @@ DataReader::DataReader(string filename)
 {
 	string extension = filename.substr(filename.find_last_of("."));
 	cout << "Filename extension detected: " << extension << std::endl;
-	ifstream file(filename, ios::in | ios::binary | ios::beg);
+	ifstream file(filename, ios::in | ios::binary);
 	if (!file.is_open())
 		throw std::invalid_argument("File does not exist");
 	clearBuffer();
@@ -68,11 +68,11 @@ void DataReader::readPgmFile(std::ifstream &file)
 	int pgm_maxval = 255;
 	string pgm_type;
 	int content_line = 0;
-	for (int i = 0; i < PGM_HEADER_LINES; ++i)
+	while (content_line < PGM_HEADER_LINES)
 	{
 		string line;
 		std::getline(file, line);
-
+		std::cout << line << std::endl;
 		if (content_line == 2)
 		{
 			std::istringstream ss(line);
