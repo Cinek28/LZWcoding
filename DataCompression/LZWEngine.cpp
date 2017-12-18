@@ -1,11 +1,10 @@
 #include "LZWEngine.h"
 
-//std::vector<uint32_t> code_test;
-//std::vector<uint32_t> data_test;
+std::vector<uint32_t> code_test;
+std::vector<uint32_t> data_test;
 
 int LZWEngine::Code(const char* source, const char* dest) {
 
-	
 	_pReader.reset(new DataReader(source));
 
 	_sCompressConfig.data_order_type = _pReader->getConfig().data_order_type;
@@ -18,35 +17,27 @@ int LZWEngine::Code(const char* source, const char* dest) {
 	vector<uint32_t> codeVector;
 	auto FileData = _pReader->getBuffer();
 
-	vector<uint16_t> newDictionaryWord;
+	
 
 	bool tempFlag = false;
-	int dataBlockCounter = 0;
+
 
 	for(auto& inVec:FileData)
 	{
-			dataBlockCounter++;
-			auto inputElement = inVec.begin();
+	
+		auto inputElement = inVec.begin();
 
-			if(inputElement!=inVec.end()){
+		if(inputElement!=inVec.end()){
 
-
-				if (dataBlockCounter==1)
-				{
-					newDictionaryWord.push_back(static_cast<uint16_t>(*inputElement));
-				}
-				else 
-				{
-					tempFlag = true;
-				}
-
+			vector<uint16_t> newDictionaryWord{ static_cast<uint16_t>(*inputElement) };
+				
 			while(1)
 			{
-				if(!tempFlag)
-					++inputElement;
-				tempFlag = false;
+			
+				++inputElement;
+				
 
-				if(inputElement==inVec.end() && dataBlockCounter==FileData.size())
+				if(inputElement==inVec.end())
 				{
 					uint32_t currentOutputIndex;
 					bool wordExistence=_pDictionary->getIndex(newDictionaryWord, currentOutputIndex);
@@ -58,10 +49,7 @@ int LZWEngine::Code(const char* source, const char* dest) {
 					break;
 				}
 
-				if (inputElement == inVec.end())
-				{
-					break;
-				}
+				
 		
 				newDictionaryWord.push_back(*inputElement);
 
@@ -78,7 +66,8 @@ int LZWEngine::Code(const char* source, const char* dest) {
 					newDictionaryWord.push_back(*inputElement);
 					auto overflowFlag = _pDictionary->insertEntry(newDictionaryWord);
 				
-					if (overflowFlag == _pDictionary->getOverflowFlag()){
+					if (overflowFlag == _pDictionary->getOverflowFlag())
+					{
 						_pDictionary->insertEntry(newDictionaryWord); // New word is inserted to new dictionary.
 					}
 
@@ -87,7 +76,9 @@ int LZWEngine::Code(const char* source, const char* dest) {
 				}
 			}
 		}
-		//_pDictionary->flush();
+
+		_pDictionary->flush();
+		codeVector.push_back(_pDictionary->getOverflowFlag());
 	}
 
 	_pCoder.reset(new DataCoder(dest, _sCompressConfig.indx_bit_count));
@@ -103,9 +94,10 @@ int LZWEngine::Code(const char* source, const char* dest) {
 	printf("\nCompress succeded\n raw data size=%llu\n compressed data size=%llu\n\n", insize, codeVector.size());
 	_pCoder.reset();
 	///////////////////
-	//code_test = codeVector;
-	//data_test = FileData[0];
-	//data_test.insert(data_test.end(), FileData[1].begin(), FileData[1].end());
+	
+	code_test = codeVector;
+	data_test = FileData[0];
+	data_test.insert(data_test.end(), FileData[1].begin(), FileData[1].end());
 	//////////////////
 	return 0;
 }
@@ -113,7 +105,9 @@ int LZWEngine::Code(const char* source, const char* dest) {
 
 int LZWEngine::Decode(const char* source, const char* dest) {
 
+	_pCoder.reset(new DataCoder(dest, 8));
 	_pReader.reset(new DataReader(source));
+	
 
 	if (!_pReader->isDecoding())
 		return -1;
@@ -129,13 +123,10 @@ int LZWEngine::Decode(const char* source, const char* dest) {
 	vector<uint16_t> decompressedVector;
 
 	for(auto& inVec:FileData){
-		////////////////////////
-		/*inVec = code_test;*/
-		////////////////////////
+
 		auto inputElement = inVec.begin();
 
 		if (inputElement != inVec.end()) {
-
 
 			vector<uint16_t> newWord;
 			vector<uint16_t> currentWord;
@@ -155,6 +146,20 @@ int LZWEngine::Decode(const char* source, const char* dest) {
 					break;
 				}
 
+				if (*inputElement == _pDictionary->getOverflowFlag())
+				{
+					_pDictionary->flush();
+					auto nextInputElement = inputElement + 1;
+					if (nextInputElement != inVec.end())
+					{
+						indexExistence = _pDictionary->getEntry(*nextInputElement, newWord);
+						if (!indexExistence)
+							throw std::logic_error("Can't get word for the first index");
+						decompressedVector.insert(decompressedVector.end(), newWord.begin(), newWord.end());
+						inputElement++;
+					}
+					continue;
+				}
 
 				indexExistence = _pDictionary->getEntry(*inputElement, currentWord);
 				if (indexExistence) {
@@ -191,21 +196,23 @@ int LZWEngine::Decode(const char* source, const char* dest) {
 	}
 
 
-	_pCoder.reset(new DataCoder(dest, 8));
+
 	for (const auto& i : decompressedVector)
 		_pCoder->writeIndex(i);
-	_pCoder.reset();
-	//size_t insize = 0;
-	//for (const auto& v : FileData) {
-	//	insize += v.size();
-	//}
-	//printf("\nDecompress succeded\n compressed data size=%llu\n decompressed data size=%llu\n\n", insize, decompressedVector.size());
+	
 
-	//for (int i = 0; i < data_test.size(); ++i)
-	//{
-	//	if (data_test[i] != decompressedVector[i])
-	//		printf("\nData element %i not equal; Data val='%u' ; Decoded val='%u'\n", i, data_test[i], decompressedVector[i]);
-	//}
+
+	size_t insize = 0;
+	for (const auto& v : FileData) {
+		insize += v.size();
+	}
+	printf("\nDecompress succeded\n compressed data size=%llu\n decompressed data size=%llu\n\n", insize, decompressedVector.size());
+
+	for (int i = 0; i < data_test.size(); ++i)
+	{
+		if (data_test[i] != decompressedVector[i])
+			printf("\nData element %i not equal; Data val='%u' ; Decoded val='%u'\n", i, data_test[i], decompressedVector[i]);
+	}
 
 	return 0;
 }
