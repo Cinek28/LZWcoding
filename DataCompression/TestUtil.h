@@ -13,11 +13,13 @@ public:
 
 	double getCompressionRate() const;
 
+	static unsigned long long getFileSizeInBytes(const char* file);
+
 	static double calculateTime(std::function<void()> fun);
 
 	void reset();
 
-	void runTest(const LZWEngine& engine, const char* source, const char* destination);
+	void runTest(LZWEngine* engine, const char* source, const char* destination, const char* result);
 
 
 private:     
