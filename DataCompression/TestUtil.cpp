@@ -14,14 +14,14 @@ TestUtil::~TestUtil()
 
 
 
-double TestUtil::getEntropy() const
+double TestUtil::getCodingEfficiency() const
 {
-	return entropy;
+	return codingEfficiency;
 }
 
 double TestUtil::getCompressionRate() const
 {
-	return compressionRate;
+	return compressionRatio;
 }
 
 unsigned long long TestUtil::getFileSizeInBytes(const char* file)
@@ -50,8 +50,8 @@ double TestUtil::calculateTime(std::function<void()> fun)
 
 void TestUtil::reset()
 {
-	compressionRate = 0.0;
-	entropy = 0.0;
+	compressionRatio = 0.0;
+	codingEfficiency = 0.0;
 	codingTime = 0.0;
 	decodingTime = 0.0;
 
@@ -62,10 +62,11 @@ void TestUtil::runTest(LZWEngine* engine, const char* source, const char* destin
 	this->reset();
 	codingTime = calculateTime([engine, source, destination]()->double {return engine->Code(source, destination); });
 	decodingTime = calculateTime([engine, destination, result]()->double {return engine->Decode(destination, result); });
-	compressionRate = static_cast<double>(getFileSizeInBytes(source)) / static_cast<double>(getFileSizeInBytes(destination));
-	std::cout << "Compression rate: " << compressionRate << std::endl;
+	compressionRatio = static_cast<double>(getFileSizeInBytes(source)) / static_cast<double>(getFileSizeInBytes(destination));
+	codingEfficiency = 0.0;
+	std::cout << "Compression ratio: " << compressionRatio << std::endl;
 	std::cout << "Coding time: " << codingTime << " sec." << std::endl;
 	std::cout << "Decoding time: " << decodingTime << " sec." << std::endl;
-	std::cout << "Entropy: " << entropy << std::endl;
+	std::cout << "Compression efficiency: " << codingEfficiency << std::endl;
 
 }

@@ -9,7 +9,7 @@ public:
 	TestUtil();
 	~TestUtil();
 
-	double getEntropy() const;
+	double getCodingEfficiency() const;
 
 	double getCompressionRate() const;
 
@@ -23,8 +23,8 @@ public:
 
 
 private:     
-	double compressionRate;
-	double entropy;
+	double compressionRatio;
+	double codingEfficiency;
 	double codingTime;
     double decodingTime;
 };
