@@ -176,7 +176,6 @@ void TestUtil::runTest(LZWEngine* engine, const char* source, const char* destin
 	std::cout << "Entropy: " << entropy << std::endl;
 	std::cout << "Bit rate: " << bitRate << std::endl;
 	std::cout << "Compression efficiency: " << codingEfficiency << std::endl;
-	saveToFile(source);
 
 }
 

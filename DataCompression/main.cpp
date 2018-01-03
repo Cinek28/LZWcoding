@@ -3,8 +3,11 @@
 #include <iostream>
 #include <random>
 #include <time.h>
+#include <experimental/filesystem>
 #include "LZWEngine.h"
 #include "TestUtil.h"
+
+namespace filesystem = std::experimental::filesystem;
 
 void testCodeDecode()
 {
@@ -61,7 +64,17 @@ int main(int argc, char** argv)
 	LZWEngine eng;
 	TestUtil test;
 
-	test.runTest(&eng, ".\\barbara.pgm", ".\\TestOut.lzw", ".\\result");
+	for (auto & path : filesystem::directory_iterator(".\\Files"))
+	{
+		std::cout << path << std::endl;
+		filesystem::path file = filesystem::canonical(path);
+		test.runTest(&eng, file.u8string().c_str(), ".\\TestOut.lzw", ".\\result.pgm");
+		std::string source = file.u8string();
+		source = source.substr(source.find_last_of("\\"));
+		source = source.substr(0, source.find_last_of(".")) + ".txt";
+		source = ".\\Tests\\" + source;
+		test.saveToFile(source);
+	}
 
 	//try{
 	//	eng.Code("C:\\Users\\Hubert\\Documents\\STUDIA_INFA_MGR\\semestr_1\\KODA\\Projekt\\LZWcoding\\barbara.pgm", "C:\\Users\\Hubert\\Documents\\STUDIA_INFA_MGR\\semestr_1\\KODA\\Projekt\\LZWcoding\\TestOut.lzw");
