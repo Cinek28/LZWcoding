@@ -181,17 +181,18 @@ void TestUtil::runTest(LZWEngine* engine, const char* source, const char* destin
 
 }
 
-void TestUtil::saveToFile(string filename)
+void TestUtil::saveToFile(string filename, LZWEngine* engine)
 {
 	ofstream testFile;
 
-	filename = filename.substr(0,filename.find_last_of(".")) + ".txt";
+	string file = filename.substr(0,filename.find_last_of(".")) + ".txt";
 
-	testFile.open(filename, ios::out | ios::trunc);
-	testFile << "Compression ratio: " << compressionRatio << std::endl;
-	testFile << "Coding time: " << codingTime << " sec." << std::endl;
-	testFile << "Decoding time: " << decodingTime << " sec." << std::endl;
-	testFile << "Entropy: " << entropy << std::endl;
-	testFile << "Bit rate: " << bitRate << std::endl;
-	testFile << "Compression efficiency: " << codingEfficiency << std::endl;
+	testFile.open(file, ios::out | std::ios::binary);
+	testFile << "Stopien kompresji: " << compressionRatio << std::endl << std::endl;
+	testFile << "Czas kodowania: " << codingTime << " sek." << std::endl << std::endl;
+	testFile << "Czas dekodowania: " << decodingTime << " sek." << std::endl << std::endl;
+	testFile << "Entropia: " << entropy << " bit" << std::endl << std::endl;
+	testFile << "Srednia dlugosc bitowa: " << bitRate << "bit" << std::endl << std::endl;
+	testFile << "Efektywnosc kodowania: " << codingEfficiency << std::endl << std::endl;
+	testFile.close();
 }

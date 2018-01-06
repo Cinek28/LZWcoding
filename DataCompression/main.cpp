@@ -68,19 +68,19 @@ int main(int argc, char** argv)
 	{
 		std::cout << path << std::endl;
 		filesystem::path file = filesystem::canonical(path);
-		test.runTest(&eng, file.u8string().c_str(), ".\\TestOut.lzw", ".\\result.pgm", 8);
+		test.runTest(&eng, file.u8string().c_str(), ".\\TestOut.lzw", ".\\result.pgm", 10);
 		std::string source = file.u8string();
 		source = source.substr(source.find_last_of("\\"));
-		source = source.substr(0, source.find_last_of(".")) + "_8_bit.txt";
+		source = source.substr(0, source.find_last_of(".")) + "_10_bit.txt";
 		source = ".\\Tests\\" + source;
-		test.saveToFile(source);
+		test.saveToFile(source, &eng);
 
 		test.runTest(&eng, file.u8string().c_str(), ".\\TestOut.lzw", ".\\result.pgm", 14);
 		source = file.u8string();
 		source = source.substr(source.find_last_of("\\"));
 		source = source.substr(0, source.find_last_of(".")) + "_14_bit.txt";
 		source = ".\\Tests\\" + source;
-		test.saveToFile(source);
+		test.saveToFile(source, &eng);
 	}
 
 	//try{

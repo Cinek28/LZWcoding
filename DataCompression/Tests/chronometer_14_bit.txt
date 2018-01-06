@@ -1,6 +1,12 @@
-Compression ratio: 1.37425
-Coding time: 0.098198 sec.
-Decoding time: 0.0913123 sec.
-Entropy: 6.11406
-Bit rate: 14
-Compression efficiency: 2.2898
+Stopien kompresji: 1.37425
+
+Czas kodowania: 0.0893827 sek.
+
+Czas dekodowania: 0.0466164 sek.
+
+Entropia: 6.11406 bit
+
+Srednia dlugosc bitowa: 14bit
+
+Efektywnosc kodowania: 2.2898
+

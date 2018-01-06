@@ -1,0 +1,12 @@
+Stopien kompresji: 0.804751
+
+Czas kodowania: 0.154564 sek.
+
+Czas dekodowania: 0.0996943 sek.
+
+Entropia: 7.99932 bit
+
+Srednia dlugosc bitowa: 10bit
+
+Efektywnosc kodowania: 1.25011
+
