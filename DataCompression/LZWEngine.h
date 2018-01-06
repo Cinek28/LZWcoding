@@ -9,8 +9,10 @@ using namespace std;
 
 class LZWEngine {
 public:
-	int Code(const char* source, const char* dest);
+	int Code(const char* source, const char* dest, uint8_t indexBitCount);
 	int Decode(const char* source, const char* dest);
+	LZWCompressHeader& getConfig();
+
 private:
 	LZWCompressHeader _sCompressConfig;
 

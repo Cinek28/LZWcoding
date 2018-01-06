@@ -3,13 +3,13 @@
 std::vector<uint32_t> code_test;
 std::vector<uint32_t> data_test;
 
-int LZWEngine::Code(const char* source, const char* dest) {
+int LZWEngine::Code(const char* source, const char* dest, uint8_t indexBitCount) {
 
 	_pReader.reset(new DataReader(source));
 
 	_sCompressConfig.data_order_type = _pReader->getConfig().data_order_type;
 	_sCompressConfig.word_bit_count = _pReader->getConfig().word_bit_count;
-	_sCompressConfig.indx_bit_count = 14;
+	_sCompressConfig.indx_bit_count = indexBitCount;
 	
 	_pDictionary.reset(new HashDictionary(_sCompressConfig.word_bit_count, _sCompressConfig.indx_bit_count));
 
@@ -215,4 +215,9 @@ int LZWEngine::Decode(const char* source, const char* dest) {
 	}
 
 	return 0;
+}
+
+LZWCompressHeader & LZWEngine::getConfig()
+{
+	return _sCompressConfig;
 }

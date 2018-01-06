@@ -161,21 +161,23 @@ void TestUtil::reset()
 	outputHistogram.clear();
 }
 
-void TestUtil::runTest(LZWEngine* engine, const char* source, const char* destination, const char* result)
+void TestUtil::runTest(LZWEngine* engine, const char* source, const char* destination, const char* result, uint8_t indexBitCount)
 {
 	reset();
-	codingTime = calculateTime([engine, source, destination]()->double {return engine->Code(source, destination); });
+	codingTime = calculateTime([engine, source, destination, indexBitCount]()->double {return engine->Code(source, destination, indexBitCount); });
 	decodingTime = calculateTime([engine, destination, result]()->double {return engine->Decode(destination, result); });
 	compressionRatio = static_cast<double>(getFileSizeInBytes(source)) / static_cast<double>(getFileSizeInBytes(destination));
 	fillInputHistogram(source);
 	fillOutputHistogram(destination);
 	codingEfficiency = bitRate / entropy;
-	std::cout << "Compression ratio: " << compressionRatio << std::endl;
-	std::cout << "Coding time: " << codingTime << " sec." << std::endl;
-	std::cout << "Decoding time: " << decodingTime << " sec." << std::endl;
-	std::cout << "Entropy: " << entropy << std::endl;
-	std::cout << "Bit rate: " << bitRate << std::endl;
-	std::cout << "Compression efficiency: " << codingEfficiency << std::endl;
+	std::cout << "Plik: " << source << std::endl;
+	std::cout << "Ustalona liczba bitów na indeks s³ownika: " << engine->getConfig().indx_bit_count <<" bit." << std::endl;
+	std::cout << "Stopieñ kompresji: " << compressionRatio << std::endl;
+	std::cout << "Czas kodowania: " << codingTime << " sek." << std::endl;
+	std::cout << "Czas dekodowania: " << decodingTime << " sek." << std::endl;
+	std::cout << "Entropia: " << entropy << " bit" << std::endl;
+	std::cout << "Œrednia d³ugoœæ bitowa: " << bitRate << "bit" << std::endl;
+	std::cout << "Efektywnoœæ kodowania: " << codingEfficiency << std::endl;
 
 }
 

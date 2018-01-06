@@ -25,7 +25,7 @@ public:
 
 	void reset();
 
-	void runTest(LZWEngine* engine, const char* source, const char* destination, const char* result);
+	void runTest(LZWEngine* engine, const char* source, const char* destination, const char* result, uint8_t indexBitCount);
 
 	void saveToFile(string filename);
 

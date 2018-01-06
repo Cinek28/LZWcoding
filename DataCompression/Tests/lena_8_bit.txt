@@ -1,0 +1,6 @@
+Compression ratio: 0.999958
+Coding time: 16.772 sec.
+Decoding time: 3.2625 sec.
+Entropy: 7.44526
+Bit rate: 8
+Compression efficiency: 1.07451
