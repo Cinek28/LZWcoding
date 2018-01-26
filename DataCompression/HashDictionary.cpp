@@ -26,7 +26,7 @@ bool HashDictionary::getIndex(std::vector<uint16_t>& word, uint32_t& index, uint
 {
 	bool state;
 	basic_string<char16_t> stringWord(word.begin(), word.end());
-	bitsNumber = static_cast<uint8_t>(log2(static_cast<double>(_currentIndexNumber))) + 1;
+	bitsNumber = static_cast<uint8_t>(log2(ceil(static_cast<double>(_currentIndexNumber))));
 
 	auto containerElement = _container.find(stringWord);
 	if (containerElement == _container.end() || containerElement->second > _maxIndexNumber)

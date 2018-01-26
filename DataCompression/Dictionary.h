@@ -21,6 +21,8 @@ public:
 	virtual uint32_t removeElementFromList(std::basic_string<char16_t>) = 0;
 	virtual void insertElementToList(uint32_t currenIndex) = 0;
 
+	uint8_t getBitsNumber();
+
 protected:
 	virtual void initializeAlphabet() = 0;
 
