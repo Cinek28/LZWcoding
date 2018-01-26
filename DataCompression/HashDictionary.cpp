@@ -89,11 +89,11 @@ uint32_t HashDictionary::removeElementFromList(basic_string<char16_t> stringWord
 
 	// Remove from dictionary.
 	bool removedFlag = true;
-	for (auto iter = _container.begin(); iter != _container.end() && removedFlag;)
+	for (auto containerIter = _container.begin(); containerIter != _container.end() && removedFlag;)
 	{	
-		auto prevIter = iter;
-		++iter;
-		if ((*iter).second == removedIndex)
+		auto prevIter = containerIter;
+		++containerIter;
+		if ((*containerIter).second == removedIndex)
 		{
 			_container.erase(prevIter);
 			removedFlag = false;
