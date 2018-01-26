@@ -19,8 +19,7 @@ Dictionary::Dictionary(uint8_t entryBitSize, uint8_t outputBitSize)
 }
 
 Dictionary::~Dictionary()
-{
-}
+{}
 
 void Dictionary::initializeValues()
 {
