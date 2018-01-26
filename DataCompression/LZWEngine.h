@@ -19,5 +19,6 @@ private:
 	unique_ptr<DataReader> _pReader;
 	unique_ptr<Dictionary> _pDictionary;
 	unique_ptr<DataCoder> _pCoder;
+	std::vector<std::pair<uint32_t,unsigned int>> _symbolBitsNumber;
 };
 

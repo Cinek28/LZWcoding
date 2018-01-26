@@ -24,7 +24,7 @@ double TestUtil::getCompressionRate() const
 	return compressionRatio;
 }
 
-void TestUtil::fillInputHistogram(string filename)
+void TestUtil::fillInputHistogram(string filename, unsigned int rank)
 {
 	inputHistogram.clear();
 	entropy = 0.0;
@@ -41,17 +41,20 @@ void TestUtil::fillInputHistogram(string filename)
 	uint32_t size = 0;
 	auto FileData = reader->getBuffer();
 	
-	for (auto& inVec : FileData)
-	{
-		for (auto& inputElement : inVec)
+		for (int i = 0; i < FileData.size(); i = i + rank)
 		{
-			auto foundElement = std::find_if(inputHistogram.begin(), inputHistogram.end(), [inputElement](const std::pair<uint32_t, uint32_t>& pair)->bool
+			auto foundElement = std::find_if(inputHistogram.begin(), inputHistogram.end(), [&](const std::pair<uint32_t*, uint32_t>& pair)->bool
 			{
-				return inputElement == pair.first;
+				for (int j = 0; j < rank; ++j) 
+				{
+					if (*(pair.first + j*sizeof(uint8_t)) != FileData[i + j])
+						return false;
+				}
+				return true;
 			});
 			if (inputHistogram.end() == foundElement)
 			{
-				inputHistogram.push_back(std::make_pair(inputElement, 1));
+				inputHistogram.push_back(std::make_pair(&FileData[i], 1));
 			}
 			else
 			{
@@ -59,7 +62,6 @@ void TestUtil::fillInputHistogram(string filename)
 			}
 			++size;
 		}
-	}
 
 	double probability = 0.0;
 
@@ -90,12 +92,8 @@ void TestUtil::fillOutputHistogram(string filename)
 		std::cout << exception.what() << std::endl;
 		return;
 	}
-	uint32_t size = 0;
-	auto FileData = reader->getBuffer();
 
-	for (auto& inVec : FileData)
-	{
-		for (auto& inputElement : inVec)
+		for (auto& inputElement : FileData)
 		{
 			auto foundElement = std::find_if(outputHistogram.begin(), outputHistogram.end(), [inputElement](const std::pair<uint32_t, uint32_t>& pair)->bool
 			{
@@ -109,17 +107,17 @@ void TestUtil::fillOutputHistogram(string filename)
 			{
 				++(foundElement->second);
 			}
-			++size;
 		}
-	}
 
 	double probability = 0.0;
-	double bitCount = reader->getConfig().indx_bit_count;
-
-	for (auto symbol : outputHistogram)
+	unsigned int size = _pBitCountVector->size();
+	for (int i = 0; i< _pBitCountVector->size(); ++i)
 	{
+		auto symbol = std::find_if(outputHistogram.begin(), outputHistogram.end(), [&](auto item)->bool {
+			return item.first == FileData[i];
+		});
 		probability = static_cast<double>(symbol.second) / static_cast<double>(size);
-		bitRate += probability*bitCount;
+		bitRate += probability*(*_pBitCountVector)[i];
 	}
 
 }
