@@ -21,13 +21,12 @@ int LZWEngine::Code(const char* source, const char* dest, uint8_t indexBitCount)
 
 	bool tempFlag = false;
 
-
-	for(auto& inVec:FileData)
-	{
+	auto inVec = FileData[1];
 	
-		auto inputElement = inVec.begin();
+	
+	auto inputElement = inVec.begin();
 
-		if(inputElement!=inVec.end()){
+	if(inputElement!=inVec.end()){
 
 			vector<uint16_t> newDictionaryWord{ static_cast<uint16_t>(*inputElement) };
 				
@@ -77,9 +76,6 @@ int LZWEngine::Code(const char* source, const char* dest, uint8_t indexBitCount)
 			}
 		}
 
-		_pDictionary->flush();
-		codeVector.push_back(_pDictionary->getOverflowFlag());
-	}
 
 	_pCoder.reset(new DataCoder(dest, _sCompressConfig.indx_bit_count));
 	_pCoder->writeCompressionHeader(_sCompressConfig);
@@ -124,11 +120,9 @@ int LZWEngine::Decode(const char* source, const char* dest) {
 
 	vector<uint16_t> decompressedVector;
 
-	for(auto& inVec:FileData){
-
-		auto inputElement = inVec.begin();
-
-		if (inputElement != inVec.end()) {
+	auto inVec = FileData[0];
+	auto inputElement = inVec.begin();
+	if (inputElement != inVec.end()) {
 
 			vector<uint16_t> newWord;
 			vector<uint16_t> currentWord;
@@ -146,21 +140,6 @@ int LZWEngine::Decode(const char* source, const char* dest) {
 
 				if (inputElement == inVec.end()) {
 					break;
-				}
-
-				if (*inputElement == _pDictionary->getOverflowFlag())
-				{
-					_pDictionary->flush();
-					auto nextInputElement = inputElement + 1;
-					if (nextInputElement != inVec.end())
-					{
-						indexExistence = _pDictionary->getEntry(*nextInputElement, newWord);
-						if (!indexExistence)
-							throw std::logic_error("Can't get word for the first index");
-						decompressedVector.insert(decompressedVector.end(), newWord.begin(), newWord.end());
-						inputElement++;
-					}
-					continue;
 				}
 
 				indexExistence = _pDictionary->getEntry(*inputElement, currentWord);
@@ -195,9 +174,6 @@ int LZWEngine::Decode(const char* source, const char* dest) {
 				}
 		}
 	}
-	}
-
-
 
 	for (const auto& i : decompressedVector)
 		_pCoder->writeIndex(i);
