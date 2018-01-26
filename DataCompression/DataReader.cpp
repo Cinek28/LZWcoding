@@ -56,8 +56,6 @@ DataReader::~DataReader()
 }
 void DataReader::readRawFile(std::ifstream &file)
 {
-	_config.word_bit_count = 8;
-	_config.data_order_type = ReadTypeEnum::LinearAscii;
 	loadBuffer(file);
 }
 
@@ -75,7 +73,7 @@ void DataReader::readLzwFile(std::ifstream &file)
 	char *charHeader = reinterpret_cast<char*>(&compHeader);
 	for (int i = 1; i < comp_header_size + 1; ++i)
 	{
-		 charHeader[i] = _buffer[i];
+		 charHeader[i-1] = _buffer[i];
 	}
 	_config = compHeader;
 	_bitOffset = 8 * (comp_header_size + 1);
@@ -100,9 +98,9 @@ uint32_t DataReader::getSymbol(uint32_t bitCount)
 	_bitOffset += bitCount;
 	if (_bitOffset > 8 * _fileSize)
 		throw std::out_of_range("Cannot get more bits, EOF");
-	if (bitCount >= 32)
+	if (bitCount >= MAX_OUTPUT_BIT_SIZE)
 		throw std::invalid_argument("DataReader::bit count size too large!");
-	bitCount = pow(2, bitCount) - 1; //this will only work up to 32 bits, of course
+	bitCount = (uint32_t)(((uint64_t)1 << bitCount) - 1); 
 	data += bitOffset / 8;
 	bitOffset %= 8;
 	return (*((uint32_t*)data) >> bitOffset) & bitCount;  //little endian

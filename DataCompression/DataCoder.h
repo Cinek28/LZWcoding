@@ -9,16 +9,14 @@
 class DataCoder
 {
 public:
-	DataCoder(std::string filename, uint8_t outputBitSize);
+	DataCoder(std::string filename);
 	~DataCoder();
-	void writeIndex(uint32_t index);
+	void writeIndex(uint32_t index, uint32_t bitSize);
 	void writeCompressionHeader(LZWCompressHeader header);
 private:
 	std::ofstream _file;
 	const uint8_t _byteSize = 8;
-	uint8_t _outputBitSize;
-	uint32_t _indexMask;
-	uint32_t _shiftRemainder;
-	uint8_t _dataRemainder;
+	uint64_t _bitBuffer = 0;
+	uint32_t _shift = 0;
 };
 
