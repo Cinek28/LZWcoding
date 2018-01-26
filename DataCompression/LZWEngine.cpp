@@ -20,11 +20,13 @@ int LZWEngine::Code(const char* source, const char* dest) {
 	if (inputElement != inVec.end()) {
 
 		vector<uint16_t> newDictionaryWord{ static_cast<uint16_t>(*inputElement) };
-
+		int nItr = 0;
 		while (1)
 		{
-
+			nItr++;
+			//printf("%d\n",nItr);
 			++inputElement;
+
 
 
 			if (inputElement == inVec.end())
@@ -60,12 +62,7 @@ int LZWEngine::Code(const char* source, const char* dest) {
 				_symbolBitsNumber.push_back(std::pair<uint32_t, unsigned int>(currentOutputIndex, currentIndxSize));
 
 				newDictionaryWord.push_back(*inputElement);
-				auto overflowFlag = _pDictionary->insertEntry(newDictionaryWord);
-
-				if (overflowFlag == _pDictionary->getOverflowFlag())
-				{
-					_pDictionary->insertEntry(newDictionaryWord); // New word is inserted to new dictionary.
-				}
+				_pDictionary->insertEntry(newDictionaryWord);
 
 				newDictionaryWord.clear();
 				newDictionaryWord.push_back(*inputElement);
@@ -78,7 +75,9 @@ int LZWEngine::Code(const char* source, const char* dest) {
 	_pCoder->writeCompressionHeader(_sCompressConfig);
 	for (const auto& i : codeVector)
 	{
-		_pCoder->writeIndex(i, _symbolBitsNumber[i].second);
+		static int n=0;
+		_pCoder->writeIndex(i, _symbolBitsNumber[n].second);
+		++n;
 	}
 
 	size_t insize = inVec.size();
@@ -101,8 +100,10 @@ int LZWEngine::Decode(const char* source, const char* dest) {
 	if (!_pReader->isDecoding())
 		return -1;
 
+	auto dictionarySize = _pReader->getConfig().dictionary_size;
+	auto owfType = _pReader->getConfig().overflow_type;
 
-	_pDictionary.reset(new TableDictionary(8, 16));
+	_pDictionary.reset(new TableDictionary(8, dictionarySize));
 
 
 	//Out vector
@@ -128,59 +129,47 @@ int LZWEngine::Decode(const char* source, const char* dest) {
 	{
 		++n_it;
 		auto previousInputElement = inputElement;
+		auto indxSize=_pDictionary->getBitsNumber();
 
 		try
 		{
 
-			while (1)
+			inputElement = _pReader->getSymbol(indxSize);
+
+			indexExistence = _pDictionary->getEntry(inputElement, currentWord);
+			if (indexExistence)
 			{
+				decompressedVector.insert(decompressedVector.end(), currentWord.begin(), currentWord.end());
+				newWord.push_back(currentWord.front());
 
-				inputElement = _pReader->getSymbol(indxSize);
-
-				indexExistence = _pDictionary->getEntry(inputElement, currentWord);
-				if (indexExistence)
-				{
-					decompressedVector.insert(decompressedVector.end(), currentWord.begin(), currentWord.end());
-					newWord.push_back(currentWord.front());
-
-					auto overflowFlag = _pDictionary->insertEntry(newWord);
-					if (overflowFlag == _pDictionary->getOverflowFlag())
-						_pDictionary->insertEntry(newWord);
-
-					newWord = currentWord;
-
-					break;
-				}
-				else {
-
-					vector<uint16_t> previousWord;
-
-					indexExistence = _pDictionary->getEntry(previousInputElement, previousWord);
-					if (!indexExistence)
-						throw std::logic_error("Can't get word for the index in critical situation");
-
-					auto newCriticalWord = previousWord;
-					newCriticalWord.push_back(previousWord.front());
-
-					decompressedVector.insert(decompressedVector.end(), newCriticalWord.begin(), newCriticalWord.end());
-
-					auto overflowFlag = _pDictionary->insertEntry(newCriticalWord);
-					if (overflowFlag == _pDictionary->getOverflowFlag())
-						_pDictionary->insertEntry(newCriticalWord);
-					newWord = newCriticalWord;
-
-					break;
-				}
-
-
-				indxSize++;
+				_pDictionary->insertEntry(newWord);
+				newWord = currentWord;
 			}
+			else 
+			{
+				vector<uint16_t> previousWord;
+
+				indexExistence = _pDictionary->getEntry(previousInputElement, previousWord);
+				if (!indexExistence)
+					throw std::logic_error("Can't get word for the index in critical situation");
+				auto newCriticalWord = previousWord;
+				newCriticalWord.push_back(previousWord.front());
+
+				decompressedVector.insert(decompressedVector.end(), newCriticalWord.begin(), newCriticalWord.end());
+
+				_pDictionary->insertEntry(newCriticalWord);
+				newWord = newCriticalWord;
+			}
+
 
 		}
 		catch (std::out_of_range)
 		{
 			break;
 		}
+
+		
+		
 
 	}
 
