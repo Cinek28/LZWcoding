@@ -46,13 +46,11 @@ uint32_t HashDictionary::insertEntry(std::vector<uint16_t>& word)
 	basic_string<char16_t> stringWord(word.begin(), word.end());
 	if (_currentIndexNumber > _maxIndexNumber)
 	{
-		//flush();
 		return removeElementFromList(stringWord);
 	}
 	else
 	{
 		_container[stringWord] = _currentIndexNumber;
-
 		insertElementToList(_currentIndexNumber);
 
 		return _currentIndexNumber++;
@@ -108,7 +106,7 @@ uint32_t HashDictionary::removeElementFromList(basic_string<char16_t> stringWord
 
 void HashDictionary::insertElementToList(uint32_t currenIndex)
 {
-	_indexList.push_back(make_pair(1, _currentIndexNumber));
+	_indexList.push_back(make_pair(1, currenIndex));
 }
 
 

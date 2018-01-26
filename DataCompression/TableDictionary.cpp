@@ -42,8 +42,8 @@ uint32_t TableDictionary::insertEntry(std::vector<uint16_t>& word)
 	if (_currentIndexNumber <= _maxIndexNumber)
 	{
 		_container.push_back(stringWord);
-		insertElementToList(++_currentIndexNumber);
-		return _currentIndexNumber;
+		insertElementToList(_currentIndexNumber);
+		return _currentIndexNumber++;
 	}
 	else
 	{
