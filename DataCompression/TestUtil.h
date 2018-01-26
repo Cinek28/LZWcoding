@@ -44,6 +44,6 @@ private:
 	std::vector<std::pair<uint32_t, uint32_t>> outputHistogram;
 
 	unique_ptr<DataReader> reader; 
-	unique_ptr<vector<unsigned int>> _pBitCountVector;
+	unique_ptr<std::vector<std::pair<uint32_t,unsigned int>>> _pBitCountVector;
 };
 

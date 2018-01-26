@@ -9,7 +9,7 @@ using namespace std;
 
 class LZWEngine {
 public:
-	int Code(const char* source, const char* dest, uint8_t indexBitCount);
+	int Code(const char* source, const char* dest);
 	int Decode(const char* source, const char* dest);
 	LZWCompressHeader& getConfig();
 

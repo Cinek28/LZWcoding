@@ -26,7 +26,7 @@ double TestUtil::getCompressionRate() const
 
 void TestUtil::fillInputHistogram(string filename, unsigned int rank)
 {
-	inputHistogram.clear();
+	/*inputHistogram.clear();
 	entropy = 0.0;
 	try 
 	{
@@ -70,12 +70,12 @@ void TestUtil::fillInputHistogram(string filename, unsigned int rank)
 		probability = static_cast<double>(symbol.second) / static_cast<double>(size);
 		entropy -= log2(probability)*probability;
 	}
-
+*/
 }
 
 void TestUtil::fillOutputHistogram(string filename)
 {
-	string extension = filename.substr(filename.find_last_of("."));
+	/*string extension = filename.substr(filename.find_last_of("."));
 	outputHistogram.clear();
 	bitRate = 0.0;
 	if (extension != ".lzw")
@@ -93,7 +93,7 @@ void TestUtil::fillOutputHistogram(string filename)
 		return;
 	}
 
-		for (auto& inputElement : FileData)
+		for (auto& inputElement : _symbol)
 		{
 			auto foundElement = std::find_if(outputHistogram.begin(), outputHistogram.end(), [inputElement](const std::pair<uint32_t, uint32_t>& pair)->bool
 			{
@@ -118,7 +118,7 @@ void TestUtil::fillOutputHistogram(string filename)
 		});
 		probability = static_cast<double>(symbol.second) / static_cast<double>(size);
 		bitRate += probability*(*_pBitCountVector)[i];
-	}
+	}*/
 
 }
 
@@ -161,7 +161,7 @@ void TestUtil::reset()
 
 void TestUtil::runTest(LZWEngine* engine, const char* source, const char* destination, const char* result, uint8_t indexBitCount)
 {
-	reset();
+	/*reset();
 	codingTime = calculateTime([engine, source, destination, indexBitCount]()->double {return engine->Code(source, destination, indexBitCount); });
 	decodingTime = calculateTime([engine, destination, result]()->double {return engine->Decode(destination, result); });
 	compressionRatio = static_cast<double>(getFileSizeInBytes(source)) / static_cast<double>(getFileSizeInBytes(destination));
@@ -175,7 +175,7 @@ void TestUtil::runTest(LZWEngine* engine, const char* source, const char* destin
 	std::cout << "Czas dekodowania: " << decodingTime << " sek." << std::endl;
 	std::cout << "Entropia: " << entropy << " bit" << std::endl;
 	std::cout << "Œrednia d³ugoœæ bitowa: " << bitRate << "bit" << std::endl;
-	std::cout << "Efektywnoœæ kodowania: " << codingEfficiency << std::endl;
+	std::cout << "Efektywnoœæ kodowania: " << codingEfficiency << std::endl;*/
 
 }
 

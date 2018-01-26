@@ -3,7 +3,7 @@
 std::vector<uint32_t> code_test;
 std::vector<uint8_t> data_test;
 
-int LZWEngine::Code(const char* source, const char* dest, uint8_t indexBitCount) {
+int LZWEngine::Code(const char* source, const char* dest) {
 
 	_pReader.reset(new DataReader(source));
 
