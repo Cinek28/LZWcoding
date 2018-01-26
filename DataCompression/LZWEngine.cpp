@@ -133,8 +133,27 @@ int LZWEngine::Decode(const char* source, const char* dest) {
 
 		try
 		{
+			// For debug.
+			if (n_it == 2)
+			{
+				inputElement = _pReader->getSymbol(9);
+			}
+			else
+			{
+				inputElement = _pReader->getSymbol(indxSize);
+			}
 
-			inputElement = _pReader->getSymbol(indxSize);
+			// Only for debug
+			if (previousInputElement == code_test[n_it-2])
+			{
+				int a = 4;
+			}
+			else
+			{
+				int b = 4;
+			}
+
+			
 
 			indexExistence = _pDictionary->getEntry(inputElement, currentWord);
 			if (indexExistence)
