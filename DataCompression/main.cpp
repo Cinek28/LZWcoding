@@ -63,26 +63,20 @@ int main(int argc, char** argv)
 {
 	LZWEngine eng;
 	TestUtil test;
-
+	ofstream resultFile;
+	resultFile.open("test_results.csv", ios::out);
+	resultFile << test.getCsvHeader();
 	for (auto & path : filesystem::directory_iterator(".\\Files"))
 	{
 		std::cout << path << std::endl;
-		filesystem::path file = filesystem::canonical(path);
-		test.runTest(&eng, file.u8string().c_str(), ".\\TestOut.lzw", ".\\result.pgm", 10);
-		std::string source = file.u8string();
-		source = source.substr(source.find_last_of("\\"));
-		source = source.substr(0, source.find_last_of(".")) + "_10_bit.txt";
-		source = ".\\Tests\\" + source;
-		test.saveToFile(source, &eng);
-
-		test.runTest(&eng, file.u8string().c_str(), ".\\TestOut.lzw", ".\\result.pgm", 14);
-		source = file.u8string();
-		source = source.substr(source.find_last_of("\\"));
-		source = source.substr(0, source.find_last_of(".")) + "_14_bit.txt";
-		source = ".\\Tests\\" + source;
-		test.saveToFile(source, &eng);
+		for (int bits = 10; bits <= 16; ++bits)
+		{
+			filesystem::path file = filesystem::canonical(path);
+			test.runTest(&eng, file.u8string().c_str(), ".\\TestOut.lzw", ".\\result.pgm", bits);
+			resultFile << test.csvEntry(file.u8string().substr(file.u8string().find_last_of("\\")+1).c_str());
+		}
 	}
-
+	resultFile.close();
 	//try{
 	//	eng.Code("C:\\Users\\Hubert\\Documents\\STUDIA_INFA_MGR\\semestr_1\\KODA\\Projekt\\LZWcoding\\barbara.pgm", "C:\\Users\\Hubert\\Documents\\STUDIA_INFA_MGR\\semestr_1\\KODA\\Projekt\\LZWcoding\\TestOut.lzw");
 	//	eng.Decode("C:\\Users\\Hubert\\Documents\\STUDIA_INFA_MGR\\semestr_1\\KODA\\Projekt\\LZWcoding\\TestOut.lzw", "C:\\Users\\Hubert\\Documents\\STUDIA_INFA_MGR\\semestr_1\\KODA\\Projekt\\LZWcoding\\finito.pgm");
