@@ -196,3 +196,13 @@ void TestUtil::saveToFile(string filename, LZWEngine* engine)
 	testFile << "Efektywnosc kodowania: " << codingEfficiency << std::endl << std::endl;
 	testFile.close();
 }
+string TestUtil::csvEntry(string filename)
+{
+	std::stringstream ss;
+	ss << filename << "," << compressionRatio << "," << codingTime << "," << decodingTime << "," << entropy << "," << bitRate << "," << codingEfficiency << "\n";
+	return ss.str();
+}
+string TestUtil::getCsvHeader()
+{
+	return "\"sep=,\"\nfilename,compressionRatio,compressionTime[s],decompressionTime[s],entropy[bit],bitRate[bit],efficiency\n";
+}

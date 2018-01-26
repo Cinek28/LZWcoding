@@ -211,9 +211,12 @@ int LZWEngine::Decode(const char* source, const char* dest) {
 	for (int i = 0; i < data_test.size(); ++i)
 	{
 		if (data_test[i] != decompressedVector[i])
+		{
+			std::cout << "Aborting because error encountered in file: " << dest << "\r\n";
 			printf("\nData element %i not equal; Data val='%u' ; Decoded val='%u'\n", i, data_test[i], decompressedVector[i]);
+			return -1;
+		}
 	}
-
 	return 0;
 }
 

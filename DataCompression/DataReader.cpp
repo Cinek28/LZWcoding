@@ -72,7 +72,7 @@ void DataReader::readPgmFile(std::ifstream &file)
 	{
 		string line;
 		std::getline(file, line);
-		std::cout << line << std::endl;
+		//std::cout << line << std::endl;
 		if (content_line == 2)
 		{
 			std::istringstream ss(line);

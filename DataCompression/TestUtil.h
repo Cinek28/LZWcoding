@@ -29,7 +29,9 @@ public:
 
 	void saveToFile(string filename, LZWEngine* engine);
 
+	std::string csvEntry(string filename);
 
+	string getCsvHeader();
 private:     
 	double compressionRatio;
 	double entropy;

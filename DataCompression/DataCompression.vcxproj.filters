@@ -14,6 +14,7 @@
     </ClCompile>
     <ClCompile Include="DataCoder.cpp" />
     <ClCompile Include="LZWEngine.cpp" />
+    <ClCompile Include="TestUtil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DataReader.h" />
@@ -29,6 +30,7 @@
     <ClInclude Include="DataCoder.h" />
     <ClInclude Include="defines.h" />
     <ClInclude Include="LZWEngine.h" />
+    <ClInclude Include="TestUtil.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Dictionary">
