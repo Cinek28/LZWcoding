@@ -108,6 +108,8 @@ int LZWEngine::Decode(const char* source, const char* dest) {
 	_pCoder.reset(new DataCoder(dest, 8));
 	_pReader.reset(new DataReader(source));
 	
+	unsigned int bitCount = 8;
+
 
 	if (!_pReader->isDecoding())
 		return -1;
@@ -199,8 +201,6 @@ int LZWEngine::Decode(const char* source, const char* dest) {
 
 	for (const auto& i : decompressedVector)
 		_pCoder->writeIndex(i);
-	
-
 
 	size_t insize = 0;
 	for (const auto& v : FileData) {

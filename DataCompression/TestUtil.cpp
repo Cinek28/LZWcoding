@@ -24,7 +24,7 @@ double TestUtil::getCompressionRate() const
 	return compressionRatio;
 }
 
-void TestUtil::fillInputHistogram(string filename)
+void TestUtil::fillInputHistogram(string filename, unsigned int rank)
 {
 	inputHistogram.clear();
 	entropy = 0.0;
@@ -71,7 +71,7 @@ void TestUtil::fillInputHistogram(string filename)
 
 }
 
-void TestUtil::fillOutputHistogram(string filename)
+void TestUtil::fillOutputHistogram(string filename, unsigned int rank)
 {
 	string extension = filename.substr(filename.find_last_of("."));
 	outputHistogram.clear();

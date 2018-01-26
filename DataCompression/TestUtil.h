@@ -15,9 +15,9 @@ public:
 
 	double getCompressionRate() const;
 
-	void fillInputHistogram(string sourceFile);
+	void fillInputHistogram(string sourceFile, unsigned int rank);
 
-	void fillOutputHistogram(string destFile);
+	void fillOutputHistogram(string destFile, unsigned int rank);
 
 	static unsigned long long getFileSizeInBytes(const char* file);
 
