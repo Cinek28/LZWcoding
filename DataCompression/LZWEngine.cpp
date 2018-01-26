@@ -131,6 +131,11 @@ int LZWEngine::Decode(const char* source, const char* dest) {
 		auto previousInputElement = inputElement;
 		auto indxSize=_pDictionary->getBitsNumber();
 
+		if (n_it == 2)
+		{
+			indxSize = 9;
+		}
+
 		try
 		{
 			// For debug.
