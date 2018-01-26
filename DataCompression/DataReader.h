@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <sstream>
 #include <bitset>
+#include <exception>
 #include "defines.h"
 
 class DataReader
@@ -15,17 +16,21 @@ public:
 	~DataReader();
 
 	LZWCompressHeader getConfig();
-	std::vector<std::vector<uint32_t>>& getBuffer();
+	uint32_t getSymbol(uint32_t bitCount);
+	std::vector<uint8_t> getBuffer();
 	bool isDecoding()
 	{
 		return _isDecoding;
 	}
 private:
-	void readPgmFile(std::ifstream &file);
-	void readTextFile(std::ifstream &file);
+	void readRawFile(std::ifstream &file);
 	void readLzwFile(std::ifstream &file);
 	void clearBuffer();
-	std::vector<std::vector<uint32_t>> _buffer;
+	void loadBuffer(std::ifstream &file);
+	uint8_t *_buffer = NULL;
+	uint32_t _fileSize = 0;
+	uint32_t _shift = 0;
+	uint32_t _bitOffset = 0;
 	LZWCompressHeader _config;
 	bool _isDecoding = false;
 
