@@ -2,6 +2,8 @@
 
 #include <vector>
 #include <cstdint>
+#include <list>
+#include <utility>
 
 class Dictionary
 {
@@ -16,6 +18,8 @@ public:
 
 	uint32_t getOverflowFlag();
 	virtual void flush() = 0;
+	virtual uint32_t removeElementFromList(std::basic_string<char16_t>) = 0;
+	virtual void insertElementToList(uint32_t currenIndex) = 0;
 
 protected:
 	virtual void initializeAlphabet() = 0;
@@ -31,5 +35,7 @@ protected:
 
 	const uint16_t FLAGS_NUMBER = 1;
 	uint16_t _overflowFlag;
+
+	std::list<std::pair<uint32_t, uint32_t> > _indexList;
 };
 

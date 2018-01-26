@@ -46,12 +46,15 @@ uint32_t HashDictionary::insertEntry(std::vector<uint16_t>& word)
 	basic_string<char16_t> stringWord(word.begin(), word.end());
 	if (_currentIndexNumber > _maxIndexNumber)
 	{
-		flush();
-		return _overflowFlag;
+		//flush();
+		return removeElementFromList(stringWord);
 	}
 	else
 	{
 		_container[stringWord] = _currentIndexNumber;
+
+		insertElementToList(_currentIndexNumber);
+
 		return _currentIndexNumber++;
 	}
 }
@@ -74,6 +77,38 @@ void HashDictionary::flush()
 	_container.clear();
 	_currentIndexNumber = 0;
 	initializeAlphabet();
+}
+
+uint32_t HashDictionary::removeElementFromList(basic_string<char16_t> stringWord)
+{
+	auto iter = _indexList.begin();
+	uint32_t removedIndex = (*iter).second;
+
+	// Remove from list.
+	_indexList.erase(iter);
+
+	// Remove from dictionary.
+	bool removedFlag = true;
+	for (auto containerIter = _container.begin(); containerIter != _container.end() && removedFlag;)
+	{	
+		auto prevIter = containerIter;
+		++containerIter;
+		if ((*containerIter).second == removedIndex)
+		{
+			_container.erase(prevIter);
+			removedFlag = false;
+		}
+	}
+
+	// Add new element to dictionary.
+	_container[stringWord] = removedIndex;
+
+	return removedIndex;
+}
+
+void HashDictionary::insertElementToList(uint32_t currenIndex)
+{
+	_indexList.push_back(make_pair(1, _currentIndexNumber));
 }
 
 

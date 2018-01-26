@@ -15,6 +15,8 @@ public:
 	bool getEntry(uint32_t index, std::vector<uint16_t>& word) override;
 
 	void flush() override;
+	uint32_t removeElementFromList(std::basic_string<char16_t>) override;
+	void insertElementToList(uint32_t currenIndex) override;
 
 private:
 	void initializeAlphabet() override;

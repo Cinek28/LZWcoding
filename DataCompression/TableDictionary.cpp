@@ -42,12 +42,13 @@ uint32_t TableDictionary::insertEntry(std::vector<uint16_t>& word)
 	if (_currentIndexNumber <= _maxIndexNumber)
 	{
 		_container.push_back(stringWord);
-		return _currentIndexNumber++;
+		insertElementToList(++_currentIndexNumber);
+		return _currentIndexNumber;
 	}
 	else
 	{
-		flush();
-		return _overflowFlag;
+		//flush();
+		return removeElementFromList(stringWord);
 	}
 }
 
@@ -69,5 +70,24 @@ void TableDictionary::flush()
 	_container.clear();
 	_currentIndexNumber = 0;
 	initializeAlphabet();
+}
+
+uint32_t TableDictionary::removeElementFromList(std::basic_string<char16_t> stringWord)
+{
+	auto iter = _indexList.begin();
+	uint32_t removedIndex = (*iter).second;
+
+	// Remove from list.
+	_indexList.erase(iter);
+
+	// Remove old and add new element to dictionary.
+	_container[removedIndex] = stringWord;
+	
+	return removedIndex;
+}
+
+void TableDictionary::insertElementToList(uint32_t currenIndex)
+{
+	_indexList.push_back(make_pair(1, currenIndex));
 }
 
