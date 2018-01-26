@@ -17,7 +17,7 @@ public:
 
 	void fillInputHistogram(string sourceFile, unsigned int rank);
 
-	void fillOutputHistogram(string destFile, unsigned int rank);
+	void fillOutputHistogram(string destFile);
 
 	static unsigned long long getFileSizeInBytes(const char* file);
 
@@ -40,9 +40,10 @@ private:
 	double codingTime;
     double decodingTime;
 
-	std::vector<std::pair<uint32_t, uint32_t>> inputHistogram;
+	std::vector<std::pair<uint8_t*, uint8_t>> inputHistogram;
 	std::vector<std::pair<uint32_t, uint32_t>> outputHistogram;
 
 	unique_ptr<DataReader> reader; 
+	unique_ptr<vector<unsigned int>> _pBitCountVector;
 };
 
