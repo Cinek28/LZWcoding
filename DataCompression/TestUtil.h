@@ -40,7 +40,7 @@ private:
 	double codingTime;
     double decodingTime;
 
-	std::vector<std::pair<uint8_t*, uint8_t>> inputHistogram;
+	std::vector<std::pair<uint8_t*, uint32_t>> inputHistogram;
 	std::vector<std::pair<uint32_t, uint32_t>> outputHistogram;
 
 	unique_ptr<DataReader> reader; 

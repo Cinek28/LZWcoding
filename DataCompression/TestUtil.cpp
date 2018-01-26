@@ -26,7 +26,7 @@ double TestUtil::getCompressionRate() const
 
 void TestUtil::fillInputHistogram(string filename, unsigned int rank)
 {
-	/*inputHistogram.clear();
+	inputHistogram.clear();
 	entropy = 0.0;
 	try 
 	{
@@ -43,7 +43,7 @@ void TestUtil::fillInputHistogram(string filename, unsigned int rank)
 	
 		for (int i = 0; i < FileData.size(); i = i + rank)
 		{
-			auto foundElement = std::find_if(inputHistogram.begin(), inputHistogram.end(), [&](const std::pair<uint32_t*, uint32_t>& pair)->bool
+			auto foundElement = std::find_if(inputHistogram.begin(), inputHistogram.end(), [&](const std::pair<uint8_t*, uint32_t>& pair)->bool
 			{
 				for (int j = 0; j < rank; ++j) 
 				{
@@ -70,12 +70,12 @@ void TestUtil::fillInputHistogram(string filename, unsigned int rank)
 		probability = static_cast<double>(symbol.second) / static_cast<double>(size);
 		entropy -= log2(probability)*probability;
 	}
-*/
+
 }
 
 void TestUtil::fillOutputHistogram(string filename)
 {
-	/*string extension = filename.substr(filename.find_last_of("."));
+	string extension = filename.substr(filename.find_last_of("."));
 	outputHistogram.clear();
 	bitRate = 0.0;
 	if (extension != ".lzw")
@@ -93,15 +93,15 @@ void TestUtil::fillOutputHistogram(string filename)
 		return;
 	}
 
-		for (auto& inputElement : _symbol)
+		for (auto& inputElement : *_pBitCountVector)
 		{
 			auto foundElement = std::find_if(outputHistogram.begin(), outputHistogram.end(), [inputElement](const std::pair<uint32_t, uint32_t>& pair)->bool
 			{
-				return inputElement == pair.first;
+				return inputElement.first == pair.first;
 			});
 			if (outputHistogram.end() == foundElement)
 			{
-				outputHistogram.push_back(std::make_pair(inputElement, 1));
+				outputHistogram.push_back(std::make_pair(inputElement.first, 1));
 			}
 			else
 			{
@@ -111,14 +111,14 @@ void TestUtil::fillOutputHistogram(string filename)
 
 	double probability = 0.0;
 	unsigned int size = _pBitCountVector->size();
-	for (int i = 0; i< _pBitCountVector->size(); ++i)
+	for (int i = 0; i < size; ++i)
 	{
 		auto symbol = std::find_if(outputHistogram.begin(), outputHistogram.end(), [&](auto item)->bool {
-			return item.first == FileData[i];
+			return item.first == _pBitCountVector->at[i].first;
 		});
-		probability = static_cast<double>(symbol.second) / static_cast<double>(size);
-		bitRate += probability*(*_pBitCountVector)[i];
-	}*/
+		probability = static_cast<double>(symbol->second) / static_cast<double>(size);
+		bitRate += (_pBitCountVector->at[i].first)*probability;
+	}
 
 }
 
@@ -157,25 +157,26 @@ void TestUtil::reset()
 
 	inputHistogram.clear();
 	outputHistogram.clear();
+	_pBitCountVector.reset();
 }
 
 void TestUtil::runTest(LZWEngine* engine, const char* source, const char* destination, const char* result, uint8_t indexBitCount)
 {
-	/*reset();
-	codingTime = calculateTime([engine, source, destination, indexBitCount]()->double {return engine->Code(source, destination, indexBitCount); });
+	reset();
+	_pBitCountVector.reset(&(engine->_symbolBitsNumber));
+	codingTime = calculateTime([engine, source, destination, indexBitCount]()->double {return engine->Code(source, destination); });
 	decodingTime = calculateTime([engine, destination, result]()->double {return engine->Decode(destination, result); });
 	compressionRatio = static_cast<double>(getFileSizeInBytes(source)) / static_cast<double>(getFileSizeInBytes(destination));
 	fillInputHistogram(source);
 	fillOutputHistogram(destination);
 	codingEfficiency = bitRate / entropy;
 	std::cout << "Plik: " << source << std::endl;
-	std::cout << "Ustalona liczba bitów na indeks s³ownika: " << engine->getConfig().indx_bit_count <<" bit." << std::endl;
 	std::cout << "Stopieñ kompresji: " << compressionRatio << std::endl;
 	std::cout << "Czas kodowania: " << codingTime << " sek." << std::endl;
 	std::cout << "Czas dekodowania: " << decodingTime << " sek." << std::endl;
 	std::cout << "Entropia: " << entropy << " bit" << std::endl;
 	std::cout << "Œrednia d³ugoœæ bitowa: " << bitRate << "bit" << std::endl;
-	std::cout << "Efektywnoœæ kodowania: " << codingEfficiency << std::endl;*/
+	std::cout << "Efektywnoœæ kodowania: " << codingEfficiency << std::endl;
 
 }
 
