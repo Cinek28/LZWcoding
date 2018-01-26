@@ -11,7 +11,7 @@ public:
 	Dictionary(uint8_t entryBitSize, uint8_t outputBitSize);
 	virtual ~Dictionary();
 
-	virtual bool getIndex(std::vector<uint16_t>& word, uint32_t& index) = 0;
+	virtual bool getIndex(std::vector<uint16_t>& word, uint32_t& index, uint8_t& bitsNumber) = 0;
 
 	virtual uint32_t insertEntry(std::vector<uint16_t>& word) = 0;
 	virtual bool getEntry(uint32_t index, std::vector<uint16_t>& word) = 0;

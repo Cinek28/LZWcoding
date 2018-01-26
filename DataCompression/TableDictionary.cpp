@@ -1,4 +1,5 @@
 #include "TableDictionary.h"
+#include <math.h>
 
 using namespace std;
 
@@ -20,10 +21,12 @@ void TableDictionary::initializeAlphabet()
 	}
 }
 
-bool TableDictionary::getIndex(std::vector<uint16_t>& word, uint32_t& index)
+bool TableDictionary::getIndex(std::vector<uint16_t>& word, uint32_t& index, uint8_t& bitsNumber)
 {
 	basic_string<char16_t> stringWord(word.begin(), word.end());
 
+	bitsNumber = static_cast<uint8_t>(log2(static_cast<double>(_currentIndexNumber))) + 1;
+	
 	for(uint32_t i=0; i <_container.size(); ++i)
 	{
 		if (stringWord == _container[i])
