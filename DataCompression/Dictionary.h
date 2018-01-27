@@ -22,7 +22,9 @@ public:
 	virtual void insertElementToList(uint32_t currenIndex) = 0;
 
 	uint8_t getBitsNumber();
-
+	bool isFlushState() {
+		return _flushFlag;
+	}
 protected:
 	virtual void initializeAlphabet() = 0;
 

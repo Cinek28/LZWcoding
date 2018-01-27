@@ -131,6 +131,15 @@ int LZWEngine::Decode(const char* source, const char* dest) {
 	{
 		++n_it;
 		auto previousInputElement = inputElement;
+		if (_pDictionary->isFlushState())
+		{
+			newWord.clear();
+			indxSize = _pDictionary->getBitsNumber();
+			previousInputElement = _pReader->getSymbol(indxSize);
+			newWord.push_back(previousInputElement);
+			decompressedVector.insert(decompressedVector.end(), newWord.begin(), newWord.end());
+			++n_it;
+		}
 		indxSize=_pDictionary->getBitsNumber();
 
 		try
