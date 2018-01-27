@@ -8,9 +8,9 @@ int LZWEngine::Code(const char* source, const char* dest) {
 	_pReader.reset(new DataReader(source));
 
 	_sCompressConfig.overflow_type = WorkingSet;
-	_sCompressConfig.dictionary_size = 12;
+	_sCompressConfig.dictionary_size = 14;
 
-	_pDictionary.reset(new HashDictionary(8, 12));
+	_pDictionary.reset(new HashDictionary(8, 14));
 
 
 	vector<uint32_t> codeVector;
@@ -138,21 +138,14 @@ int LZWEngine::Decode(const char* source, const char* dest) {
 
 		try
 		{
-			// For debug.
-			if (n_it == 2)
-			{
-				inputElement = _pReader->getSymbol(9);
-			}
-			else
-			{
-				inputElement = _pReader->getSymbol(indxSize);
-			}
+			inputElement = _pReader->getSymbol(indxSize);
 
 			if (n_it == 259)
 			{
 				int c = 9;
 				indxSize;
 			}
+
 			// Only for debug
 			if (previousInputElement == code_test[n_it-2])
 			{

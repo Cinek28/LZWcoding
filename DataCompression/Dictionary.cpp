@@ -37,5 +37,6 @@ uint32_t Dictionary::getOverflowFlag()
 
 uint8_t Dictionary::getBitsNumber()
 {
-	return static_cast<uint8_t>(ceil(log2(static_cast<double>(_currentIndexNumber))));
+	//return static_cast<uint8_t>(ceil(log2(static_cast<double>(_currentIndexNumber))));
+	return static_cast<uint8_t>(log2(static_cast<double>(_currentIndexNumber))) +1;
 }
