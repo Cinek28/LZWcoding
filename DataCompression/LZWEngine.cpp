@@ -3,14 +3,16 @@
 std::vector<uint32_t> code_test;
 std::vector<uint8_t> data_test;
 
+bool listOverflow = false;
+
 int LZWEngine::Code(const char* source, const char* dest) {
 
 	_pReader.reset(new DataReader(source));
 
 	_sCompressConfig.overflow_type = WorkingSet;
-	_sCompressConfig.dictionary_size = 16;
+	_sCompressConfig.dictionary_size = 17;
 
-	_pDictionary.reset(new HashDictionary(8, 16));
+	_pDictionary.reset(new HashDictionary(8, 17, listOverflow));
 
 
 	vector<uint32_t> codeVector;
@@ -103,7 +105,7 @@ int LZWEngine::Decode(const char* source, const char* dest) {
 	auto dictionarySize = _pReader->getConfig().dictionary_size;
 	auto owfType = _pReader->getConfig().overflow_type;
 
-	_pDictionary.reset(new TableDictionary(8, dictionarySize));
+	_pDictionary.reset(new TableDictionary(8, dictionarySize, listOverflow));
 
 
 	//Out vector
@@ -129,12 +131,34 @@ int LZWEngine::Decode(const char* source, const char* dest) {
 	{
 		++n_it;
 		auto previousInputElement = inputElement;
-		auto indxSize=_pDictionary->getBitsNumber();
+		indxSize=_pDictionary->getBitsNumber();
+
+		if (n_it == 2)
+		{
+			indxSize = 9;
+		}
 
 		try
 		{
-
 			inputElement = _pReader->getSymbol(indxSize);
+
+			if (n_it == 259)
+			{
+				int c = 9;
+				indxSize;
+			}
+
+			// Only for debug
+			if (previousInputElement == code_test[n_it-2])
+			{
+				int a = 4;
+			}
+			else
+			{
+				int b = 4;
+			}
+
+			
 
 			indexExistence = _pDictionary->getEntry(inputElement, currentWord);
 			if (indexExistence)

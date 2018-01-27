@@ -5,7 +5,7 @@
 #include <time.h>
 #include <experimental/filesystem>
 #include "LZWEngine.h"
-//#include "TestUtil.h"
+#include "TestUtil.h"
 
 namespace filesystem = std::experimental::filesystem;
 
@@ -62,28 +62,25 @@ namespace filesystem = std::experimental::filesystem;
 int main(int argc, char** argv)
 {
 	LZWEngine eng;
-	/*TestUtil test;
+	TestUtil test;
 	ofstream resultFile;
 	resultFile.open("test_results.csv", ios::out);
 	resultFile << test.getCsvHeader();
 	for (auto & path : filesystem::directory_iterator(".\\Files"))
 	{
 		std::cout << path << std::endl;
-		for (int bits = 10; bits <= 16; ++bits)
-		{
-			filesystem::path file = filesystem::canonical(path);
-			test.runTest(&eng, file.u8string().c_str(), ".\\TestOut.lzw", ".\\result.pgm", bits);
-			resultFile << test.csvEntry(file.u8string().substr(file.u8string().find_last_of("\\")+1).c_str());
-		}
+		filesystem::path file = filesystem::canonical(path);
+		test.runTest(&eng, file.u8string().c_str(), ".\\TestOut.lzw", ".\\result.pgm");
+		resultFile << test.csvEntry(file.u8string().substr(file.u8string().find_last_of("\\")+1).c_str());
 	}
-	resultFile.close();*/
-	try{
-		eng.Code("C:\\Users\\Hubert\\Documents\\STUDIA_INFA_MGR\\semestr_1\\KODA\\Projekt\\LZWcoding\\barbara.pgm", "C:\\Users\\Hubert\\Documents\\STUDIA_INFA_MGR\\semestr_1\\KODA\\Projekt\\LZWcoding\\TestOut.lzw");
-		eng.Decode("C:\\Users\\Hubert\\Documents\\STUDIA_INFA_MGR\\semestr_1\\KODA\\Projekt\\LZWcoding\\TestOut.lzw", "C:\\Users\\Hubert\\Documents\\STUDIA_INFA_MGR\\semestr_1\\KODA\\Projekt\\LZWcoding\\finito.pgm");
+	resultFile.close();
+	/*try{
+		eng.Code("./Files/antygona.txt", "./TestOut.lzw");
+		eng.Decode("./TestOut.lzw", "./result.txt");
 	}
 	catch (std::exception e) {
 		std::cout<<e.what()<<std::endl;
-	}
+	}*/
 	system("PAUSE");
 
 	return 0;

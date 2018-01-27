@@ -1,0 +1,3 @@
+"sep=,"
+filename,compressionRatio,compressionTime[s],decompressionTime[s],entropy[bit],bitRate[bit],efficiency
+antygona.txt,2.02456,0.021833,0.0121048,4.12515,12.216,2.48051

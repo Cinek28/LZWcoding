@@ -67,7 +67,7 @@ void TestUtil::fillInputHistogram(string filename, unsigned int rank)
 
 	for (auto symbol : inputHistogram)
 	{
-		probability = static_cast<double>(symbol.second) / static_cast<double>(size);
+		probability = static_cast<double>(symbol.second) / static_cast<double>(size)/ rank;
 		entropy -= log2(probability)*probability;
 	}
 
@@ -111,15 +111,15 @@ void TestUtil::fillOutputHistogram(string filename)
 
 	double probability = 0.0;
 	size_t size = eng->_symbolBitsNumber.size();
-	for (int i = 0; i < size; ++i)
+	for (auto symbol : outputHistogram)
 	{
-		int bitCount = eng->_symbolBitsNumber[i].first;
-		auto symbol = std::find_if(outputHistogram.begin(), outputHistogram.end(), [&](auto item)->bool {
-			return item.first == bitCount;
+		auto bitNumberPair = std::find_if(eng->_symbolBitsNumber.begin(), eng->_symbolBitsNumber.end(), [&](auto item)->bool {
+			return item.first == symbol.first;
 		});
-		probability = static_cast<double>(symbol->second) / static_cast<double>(size);
-		bitRate += bitCount*probability;
+		probability = static_cast<double>(symbol.second) / static_cast<double>(size);
+		bitRate += bitNumberPair->second*probability;
 	}
+
 
 }
 
@@ -161,11 +161,11 @@ void TestUtil::reset()
 	eng = nullptr;
 }
 
-void TestUtil::runTest(LZWEngine* engine, const char* source, const char* destination, const char* result, uint8_t indexBitCount)
+void TestUtil::runTest(LZWEngine* engine, const char* source, const char* destination, const char* result)
 {
 	reset();
 	eng = engine;
-	codingTime = calculateTime([engine, source, destination, indexBitCount]()->double {return engine->Code(source, destination); });
+	codingTime = calculateTime([engine, source, destination]()->double {return engine->Code(source, destination); });
 	decodingTime = calculateTime([engine, destination, result]()->double {return engine->Decode(destination, result); });
 	compressionRatio = static_cast<double>(getFileSizeInBytes(source)) / static_cast<double>(getFileSizeInBytes(destination));
 	fillInputHistogram(source,1);
@@ -176,6 +176,10 @@ void TestUtil::runTest(LZWEngine* engine, const char* source, const char* destin
 	std::cout << "Czas kodowania: " << codingTime << " sek." << std::endl;
 	std::cout << "Czas dekodowania: " << decodingTime << " sek." << std::endl;
 	std::cout << "Entropia: " << entropy << " bit" << std::endl;
+	fillInputHistogram(source, 2);
+	std::cout << "Entropia 2 rzedu: " << entropy << " bit" << std::endl;
+	fillInputHistogram(source, 3);
+	std::cout << "Entropia 3 rzedu: " << entropy << " bit" << std::endl;
 	std::cout << "Œrednia d³ugoœæ bitowa: " << bitRate << "bit" << std::endl;
 	std::cout << "Efektywnoœæ kodowania: " << codingEfficiency << std::endl;
 

@@ -6,7 +6,7 @@
 class TableDictionary final : public Dictionary
 {
 public:
-	TableDictionary(uint8_t entryBitSize, uint8_t outputBitSize);
+	TableDictionary(uint8_t entryBitSize, uint8_t outputBitSize, bool listOverflow);
 	~TableDictionary();
 
 	bool getIndex(std::vector<uint16_t>& word, uint32_t& index, uint8_t& bitsNumber) override;

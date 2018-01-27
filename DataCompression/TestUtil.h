@@ -25,7 +25,7 @@ public:
 
 	void reset();
 
-	void runTest(LZWEngine* engine, const char* source, const char* destination, const char* result, uint8_t indexBitCount);
+	void runTest(LZWEngine* engine, const char* source, const char* destination, const char* result);
 
 	void saveToFile(string filename, LZWEngine* engine);
 
@@ -44,6 +44,6 @@ private:
 	std::vector<std::pair<uint32_t, uint32_t>> outputHistogram;
 
 	unique_ptr<DataReader> reader; 
-	unique_ptr<std::vector<std::pair<uint32_t,unsigned int>>> _pBitCountVector;
+	LZWEngine* eng;
 };
 
