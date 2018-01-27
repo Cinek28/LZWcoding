@@ -103,7 +103,7 @@ void HashDictionary::flush()
 	_container.clear();
 	_currentIndexNumber = 0;
 	initializeAlphabet();
-	_flushFlag = true;
+	//_flushFlag = true;
 }
 
 uint32_t HashDictionary::removeElementFromList(basic_string<char16_t> stringWord)

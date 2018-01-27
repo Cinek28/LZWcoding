@@ -98,7 +98,7 @@ void TableDictionary::flush()
 	_container.clear();
 	_currentIndexNumber = 0;
 	initializeAlphabet();
-	_flushFlag = true;
+	//_flushFlag = true;
 }
 
 uint32_t TableDictionary::removeElementFromList(std::basic_string<char16_t> stringWord)
