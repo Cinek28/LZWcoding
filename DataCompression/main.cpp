@@ -64,23 +64,23 @@ int main(int argc, char** argv)
 	LZWEngine eng;
 	TestUtil test;
 	ofstream resultFile;
-	resultFile.open("test_results.csv", ios::out);
+	resultFile.open("test_results_2.csv", ios::out);
 	resultFile << test.getCsvHeader();
 	for (auto & path : filesystem::directory_iterator(".\\Files"))
 	{
-		std::cout << path << std::endl;
 		filesystem::path file = filesystem::canonical(path);
-		test.runTest(&eng, file.u8string().c_str(), ".\\TestOut.lzw", ".\\result.pgm");
-		resultFile << test.csvEntry(file.u8string().substr(file.u8string().find_last_of("\\")+1).c_str());
+		for (int i = 12; i < 27; i=i+2) {
+			std::cout << path << std::endl;
+			test.runTest(&eng, file.u8string().c_str(), ".\\TestOut.lzw", ".\\result.pgm", i);
+			resultFile << test.csvEntry(file.u8string().substr(file.u8string().find_last_of("\\") + 1).c_str());
+		}
+		test.entropyCalculated = false;
+	//	string filename = file.u8string().substr(file.u8string().find_last_of("\\") + 1).c_str();
+	//	filename = filename.substr(0, filename.find_last_of(".")) + "histogram.csv";
+	//	test.csvHistogramEntry(filename);
 	}
 	resultFile.close();
-	/*try{
-		eng.Code("./Files/antygona.txt", "./TestOut.lzw");
-		eng.Decode("./TestOut.lzw", "./result.txt");
-	}
-	catch (std::exception e) {
-		std::cout<<e.what()<<std::endl;
-	}*/
+
 	system("PAUSE");
 
 	return 0;

@@ -25,20 +25,28 @@ public:
 
 	void reset();
 
-	void runTest(LZWEngine* engine, const char* source, const char* destination, const char* result);
+	void runTest(LZWEngine* engine, const char* source, const char* destination, const char* result, const int& dictSize);
 
 	void saveToFile(string filename, LZWEngine* engine);
 
 	std::string csvEntry(string filename);
+	void csvHistogramEntry(string filename);
 
 	string getCsvHeader();
+
+	bool entropyCalculated = false;
+
 private:     
 	double compressionRatio;
 	double entropy;
+	double entropy2;
+	double entropy3;
 	double bitRate;
 	double codingEfficiency;
 	double codingTime;
     double decodingTime;
+
+	int dictionarySize;
 
 	std::vector<std::pair<uint8_t*, uint32_t>> inputHistogram;
 	std::vector<std::pair<uint32_t, uint32_t>> outputHistogram;
