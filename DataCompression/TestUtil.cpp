@@ -45,7 +45,7 @@ void TestUtil::fillInputHistogram(string filename, unsigned int rank)
 		{
 			auto foundElement = std::find_if(inputHistogram.begin(), inputHistogram.end(), [&](const std::pair<uint8_t*, uint32_t>& pair)->bool
 			{
-				for (int j = 0; j < rank; ++j) 
+				for (unsigned int j = 0; j < rank; ++j) 
 				{
 					if (*(pair.first + j*sizeof(uint8_t)) != FileData[i + j])
 						return false;
@@ -93,7 +93,7 @@ void TestUtil::fillOutputHistogram(string filename)
 		return;
 	}
 
-		for (auto& inputElement : *_pBitCountVector)
+		for (auto& inputElement : eng->_symbolBitsNumber)
 		{
 			auto foundElement = std::find_if(outputHistogram.begin(), outputHistogram.end(), [inputElement](const std::pair<uint32_t, uint32_t>& pair)->bool
 			{
@@ -110,14 +110,15 @@ void TestUtil::fillOutputHistogram(string filename)
 		}
 
 	double probability = 0.0;
-	unsigned int size = _pBitCountVector->size();
+	size_t size = eng->_symbolBitsNumber.size();
 	for (int i = 0; i < size; ++i)
 	{
+		int bitCount = eng->_symbolBitsNumber[i].first;
 		auto symbol = std::find_if(outputHistogram.begin(), outputHistogram.end(), [&](auto item)->bool {
-			return item.first == _pBitCountVector->at[i].first;
+			return item.first == bitCount;
 		});
 		probability = static_cast<double>(symbol->second) / static_cast<double>(size);
-		bitRate += (_pBitCountVector->at[i].first)*probability;
+		bitRate += bitCount*probability;
 	}
 
 }
@@ -157,17 +158,17 @@ void TestUtil::reset()
 
 	inputHistogram.clear();
 	outputHistogram.clear();
-	_pBitCountVector.reset();
+	eng = nullptr;
 }
 
 void TestUtil::runTest(LZWEngine* engine, const char* source, const char* destination, const char* result, uint8_t indexBitCount)
 {
 	reset();
-	_pBitCountVector.reset(&(engine->_symbolBitsNumber));
+	eng = engine;
 	codingTime = calculateTime([engine, source, destination, indexBitCount]()->double {return engine->Code(source, destination); });
 	decodingTime = calculateTime([engine, destination, result]()->double {return engine->Decode(destination, result); });
 	compressionRatio = static_cast<double>(getFileSizeInBytes(source)) / static_cast<double>(getFileSizeInBytes(destination));
-	fillInputHistogram(source);
+	fillInputHistogram(source,1);
 	fillOutputHistogram(destination);
 	codingEfficiency = bitRate / entropy;
 	std::cout << "Plik: " << source << std::endl;
