@@ -5,12 +5,12 @@ std::vector<uint8_t> data_test;
 
 bool listOverflow = false;
 
-int LZWEngine::Code(const char* source, const char* dest) {
+int LZWEngine::Code(const char* source, const char* dest, uint32_t dicSize) {
 
 	_pReader.reset(new DataReader(source));
 
 	_sCompressConfig.overflow_type = WorkingSet;
-	_sCompressConfig.dictionary_size = 12;
+	_sCompressConfig.dictionary_size = dicSize;
 
 	_pDictionary.reset(new HashDictionary(8, _sCompressConfig.dictionary_size, listOverflow));
 
