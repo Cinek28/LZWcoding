@@ -102,6 +102,9 @@ uint32_t HashDictionary::removeElementFromList(basic_string<char16_t> stringWord
 	// Add new element to dictionary.
 	_container[stringWord] = removedIndex;
 
+	//Add new element to the list.
+	_indexList.push_back(make_pair(1, removedIndex));
+
 	return removedIndex;
 }
 

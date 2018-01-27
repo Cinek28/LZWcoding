@@ -85,6 +85,9 @@ uint32_t TableDictionary::removeElementFromList(std::basic_string<char16_t> stri
 
 	// Remove old and add new element to dictionary.
 	_container[removedIndex] = stringWord;
+
+	//Add new element to the list.
+	_indexList.push_back(make_pair(1, removedIndex));
 	
 	return removedIndex;
 }

@@ -8,9 +8,9 @@ int LZWEngine::Code(const char* source, const char* dest) {
 	_pReader.reset(new DataReader(source));
 
 	_sCompressConfig.overflow_type = WorkingSet;
-	_sCompressConfig.dictionary_size = 16;
+	_sCompressConfig.dictionary_size = 12;
 
-	_pDictionary.reset(new HashDictionary(8, 16));
+	_pDictionary.reset(new HashDictionary(8, 12));
 
 
 	vector<uint32_t> codeVector;
@@ -129,7 +129,7 @@ int LZWEngine::Decode(const char* source, const char* dest) {
 	{
 		++n_it;
 		auto previousInputElement = inputElement;
-		auto indxSize=_pDictionary->getBitsNumber();
+		indxSize=_pDictionary->getBitsNumber();
 
 		if (n_it == 2)
 		{
@@ -148,6 +148,11 @@ int LZWEngine::Decode(const char* source, const char* dest) {
 				inputElement = _pReader->getSymbol(indxSize);
 			}
 
+			if (n_it == 259)
+			{
+				int c = 9;
+				indxSize;
+			}
 			// Only for debug
 			if (previousInputElement == code_test[n_it-2])
 			{
