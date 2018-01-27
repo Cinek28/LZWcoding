@@ -23,6 +23,7 @@ public:
 
 	uint8_t getBitsNumber();
 
+	std::vector<uint32_t > _deletedIndices;
 protected:
 	virtual void initializeAlphabet() = 0;
 
@@ -40,7 +41,7 @@ protected:
 
 	bool _flushFlag;
 	bool _listOverflow;
-
 	std::list<std::pair<uint32_t, uint32_t> > _indexList;
+	uint8_t countBit(uint32_t n);
 };
 
