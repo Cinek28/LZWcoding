@@ -63,8 +63,8 @@ uint32_t HashDictionary::insertEntry(std::vector<uint16_t>& word)
 		else
 		{
 			flush();
-			_container[stringWord] = _currentIndexNumber;
-			return _currentIndexNumber++;
+			//_container[stringWord] = _currentIndexNumber;
+			return _currentIndexNumber;
 		}
 	}
 	else

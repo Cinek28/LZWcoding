@@ -74,8 +74,8 @@ uint32_t TableDictionary::insertEntry(std::vector<uint16_t>& word)
 		else
 		{
 			flush();
-			_container.push_back(stringWord);
-			return _currentIndexNumber++;
+			//_container.push_back(stringWord);
+			return _currentIndexNumber;
 		}
 	}
 }
