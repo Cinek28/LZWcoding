@@ -29,11 +29,11 @@ bool TableDictionary::getIndex(std::vector<uint16_t>& word, uint32_t& index, uin
 
 	if (!_flushFlag)
 	{
-		bitsNumber = static_cast<uint8_t>(log2(static_cast<double>(_currentIndexNumber))) + 1;
+		bitsNumber = static_cast<uint8_t>(log2(static_cast<double>(_currentIndexNumber+1)));
 	}
 	else
 	{
-		bitsNumber = static_cast<uint8_t>(log2(static_cast<double>(_maxIndexNumber))) + 1;
+		bitsNumber = static_cast<uint8_t>(log2(static_cast<double>(_maxIndexNumber+1 )));
 	}
 
 	for(uint32_t i=0; i <_container.size(); ++i)

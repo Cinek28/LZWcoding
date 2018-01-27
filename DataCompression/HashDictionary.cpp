@@ -30,11 +30,11 @@ bool HashDictionary::getIndex(std::vector<uint16_t>& word, uint32_t& index, uint
 
 	if (!_flushFlag)
 	{
-		bitsNumber = static_cast<uint8_t>(ceil(log2(static_cast<double>(_currentIndexNumber))));
+		bitsNumber = static_cast<uint8_t>(ceil(log2(static_cast<double>(_currentIndexNumber + 1))));
 	}
 	else
 	{
-		bitsNumber = static_cast<uint8_t>(ceil(log2(static_cast<double>(_maxIndexNumber))));
+		bitsNumber = static_cast<uint8_t>(ceil(log2(static_cast<double>(_maxIndexNumber + 1))));
 	}
 
 	auto containerElement = _container.find(stringWord);
