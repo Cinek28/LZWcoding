@@ -8,7 +8,7 @@
 class Dictionary
 {
 public:
-	Dictionary(uint8_t entryBitSize, uint8_t outputBitSize);
+	Dictionary(uint8_t entryBitSize, uint8_t outputBitSize, bool listOverflow);
 	virtual ~Dictionary();
 
 	virtual bool getIndex(std::vector<uint16_t>& word, uint32_t& index, uint8_t& bitsNumber) = 0;
@@ -37,6 +37,9 @@ protected:
 
 	const uint16_t FLAGS_NUMBER = 1;
 	uint16_t _overflowFlag;
+
+	bool _flushFlag;
+	bool _listOverflow;
 
 	std::list<std::pair<uint32_t, uint32_t> > _indexList;
 };

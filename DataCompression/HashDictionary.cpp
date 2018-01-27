@@ -3,8 +3,8 @@
 
 using namespace std;
 
-HashDictionary::HashDictionary(uint8_t entryBitSize, uint8_t outputBitSize)
-	: Dictionary(entryBitSize, outputBitSize)
+HashDictionary::HashDictionary(uint8_t entryBitSize, uint8_t outputBitSize, bool listOverflow)
+	: Dictionary(entryBitSize, outputBitSize, listOverflow)
 {
 	initializeAlphabet();
 }
@@ -26,7 +26,16 @@ bool HashDictionary::getIndex(std::vector<uint16_t>& word, uint32_t& index, uint
 {
 	bool state;
 	basic_string<char16_t> stringWord(word.begin(), word.end());
-	bitsNumber = static_cast<uint8_t>(ceil(log2(static_cast<double>(_currentIndexNumber))));
+	//bitsNumber = static_cast<uint8_t>(ceil(log2(static_cast<double>(_currentIndexNumber))));
+
+	if (!_flushFlag)
+	{
+		bitsNumber = static_cast<uint8_t>(ceil(log2(static_cast<double>(_currentIndexNumber))));
+	}
+	else
+	{
+		bitsNumber = static_cast<uint8_t>(ceil(log2(static_cast<double>(_maxIndexNumber))));
+	}
 
 	auto containerElement = _container.find(stringWord);
 	if (containerElement == _container.end() || containerElement->second > _maxIndexNumber)
@@ -47,14 +56,32 @@ uint32_t HashDictionary::insertEntry(std::vector<uint16_t>& word)
 	basic_string<char16_t> stringWord(word.begin(), word.end());
 	if (_currentIndexNumber > _maxIndexNumber)
 	{
-		return removeElementFromList(stringWord);
+		if (_listOverflow)
+		{
+			return removeElementFromList(stringWord);
+		}
+		else
+		{
+			flush();
+			_container[stringWord] = _currentIndexNumber;
+			return _currentIndexNumber++;
+		}
 	}
 	else
 	{
-		_container[stringWord] = _currentIndexNumber;
-		insertElementToList(_currentIndexNumber);
+		if (_listOverflow)
+		{
+			_container[stringWord] = _currentIndexNumber;
+			insertElementToList(_currentIndexNumber);
 
-		return _currentIndexNumber++;
+			return _currentIndexNumber++;
+		}
+		else
+		{
+			_container[stringWord] = _currentIndexNumber;
+
+			return _currentIndexNumber++;
+		}
 	}
 }
 
@@ -76,6 +103,7 @@ void HashDictionary::flush()
 	_container.clear();
 	_currentIndexNumber = 0;
 	initializeAlphabet();
+	_flushFlag = true;
 }
 
 uint32_t HashDictionary::removeElementFromList(basic_string<char16_t> stringWord)

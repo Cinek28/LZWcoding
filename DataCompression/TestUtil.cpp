@@ -75,7 +75,7 @@ void TestUtil::fillInputHistogram(string filename, unsigned int rank)
 
 void TestUtil::fillOutputHistogram(string filename)
 {
-	string extension = filename.substr(filename.find_last_of("."));
+	/*string extension = filename.substr(filename.find_last_of("."));
 	outputHistogram.clear();
 	bitRate = 0.0;
 	if (extension != ".lzw")
@@ -118,7 +118,7 @@ void TestUtil::fillOutputHistogram(string filename)
 		});
 		probability = static_cast<double>(symbol->second) / static_cast<double>(size);
 		bitRate += (_pBitCountVector->at[i].first)*probability;
-	}
+	}*/
 
 }
 
@@ -162,7 +162,7 @@ void TestUtil::reset()
 
 void TestUtil::runTest(LZWEngine* engine, const char* source, const char* destination, const char* result, uint8_t indexBitCount)
 {
-	reset();
+	/*reset();
 	_pBitCountVector.reset(&(engine->_symbolBitsNumber));
 	codingTime = calculateTime([engine, source, destination, indexBitCount]()->double {return engine->Code(source, destination); });
 	decodingTime = calculateTime([engine, destination, result]()->double {return engine->Decode(destination, result); });
@@ -176,7 +176,7 @@ void TestUtil::runTest(LZWEngine* engine, const char* source, const char* destin
 	std::cout << "Czas dekodowania: " << decodingTime << " sek." << std::endl;
 	std::cout << "Entropia: " << entropy << " bit" << std::endl;
 	std::cout << "Œrednia d³ugoœæ bitowa: " << bitRate << "bit" << std::endl;
-	std::cout << "Efektywnoœæ kodowania: " << codingEfficiency << std::endl;
+	std::cout << "Efektywnoœæ kodowania: " << codingEfficiency << std::endl;*/
 
 }
 

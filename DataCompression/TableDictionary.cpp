@@ -3,8 +3,8 @@
 
 using namespace std;
 
-TableDictionary::TableDictionary(uint8_t entryBitSize, uint8_t outputBitSize)
-	: Dictionary(entryBitSize, outputBitSize)
+TableDictionary::TableDictionary(uint8_t entryBitSize, uint8_t outputBitSize, bool listOverflow)
+	: Dictionary(entryBitSize, outputBitSize, listOverflow)
 {
 	initializeAlphabet();
 }
@@ -25,7 +25,16 @@ bool TableDictionary::getIndex(std::vector<uint16_t>& word, uint32_t& index, uin
 {
 	basic_string<char16_t> stringWord(word.begin(), word.end());
 
-	bitsNumber = static_cast<uint8_t>(log2(ceil(static_cast<double>(_currentIndexNumber))));
+	//bitsNumber = static_cast<uint8_t>(log2(ceil(static_cast<double>(_currentIndexNumber))));
+
+	if (!_flushFlag)
+	{
+		bitsNumber = static_cast<uint8_t>(log2(static_cast<double>(_currentIndexNumber))) + 1;
+	}
+	else
+	{
+		bitsNumber = static_cast<uint8_t>(log2(static_cast<double>(_maxIndexNumber))) + 1;
+	}
 
 	for(uint32_t i=0; i <_container.size(); ++i)
 	{
@@ -44,14 +53,30 @@ uint32_t TableDictionary::insertEntry(std::vector<uint16_t>& word)
 
 	if (_currentIndexNumber <= _maxIndexNumber)
 	{
-		_container.push_back(stringWord);
-		insertElementToList(_currentIndexNumber);
-		return _currentIndexNumber++;
+		if (_listOverflow)
+		{
+			insertElementToList(_currentIndexNumber);
+			_container.push_back(stringWord);
+			return _currentIndexNumber++;
+		}
+		else
+		{
+			_container.push_back(stringWord);
+			return _currentIndexNumber++;
+		}
 	}
 	else
 	{
-		//flush();
-		return removeElementFromList(stringWord);
+		if (_listOverflow)
+		{
+			return removeElementFromList(stringWord);
+		}
+		else
+		{
+			flush();
+			_container.push_back(stringWord);
+			return _currentIndexNumber++;
+		}
 	}
 }
 
@@ -73,6 +98,7 @@ void TableDictionary::flush()
 	_container.clear();
 	_currentIndexNumber = 0;
 	initializeAlphabet();
+	_flushFlag = true;
 }
 
 uint32_t TableDictionary::removeElementFromList(std::basic_string<char16_t> stringWord)

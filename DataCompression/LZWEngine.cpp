@@ -3,14 +3,16 @@
 std::vector<uint32_t> code_test;
 std::vector<uint8_t> data_test;
 
+bool listOverflow = false;
+
 int LZWEngine::Code(const char* source, const char* dest) {
 
 	_pReader.reset(new DataReader(source));
 
 	_sCompressConfig.overflow_type = WorkingSet;
-	_sCompressConfig.dictionary_size = 14;
+	_sCompressConfig.dictionary_size = 16;
 
-	_pDictionary.reset(new HashDictionary(8, 14));
+	_pDictionary.reset(new HashDictionary(8, 16, listOverflow));
 
 
 	vector<uint32_t> codeVector;
@@ -103,7 +105,7 @@ int LZWEngine::Decode(const char* source, const char* dest) {
 	auto dictionarySize = _pReader->getConfig().dictionary_size;
 	auto owfType = _pReader->getConfig().overflow_type;
 
-	_pDictionary.reset(new TableDictionary(8, dictionarySize));
+	_pDictionary.reset(new TableDictionary(8, dictionarySize, listOverflow));
 
 
 	//Out vector

@@ -7,7 +7,7 @@
 class HashDictionary final : public Dictionary
 {
 public:
-	HashDictionary(uint8_t entryBitSize, uint8_t outputBitSize);
+	HashDictionary(uint8_t entryBitSize, uint8_t outputBitSize, bool listOverflow);
 	~HashDictionary();
 
 	bool getIndex(std::vector<uint16_t>& word, uint32_t& index, uint8_t& bitsNumber) override;
