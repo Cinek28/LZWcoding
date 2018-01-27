@@ -37,17 +37,6 @@ uint32_t Dictionary::getOverflowFlag()
 	return _overflowFlag;
 }
 
-uint8_t Dictionary::countBit(uint32_t n)
-{
-	int count = 0, i;
-	if (n == 0) return 0;
-	for (i = 0; i< 32; i++)
-	{
-		if ((1 << i) & n)
-			count = i;
-	}
-	return (uint8_t)++count;
-}
 uint8_t Dictionary::getBitsNumber()
 {
 	//return static_cast<uint8_t>(ceil(log2(static_cast<double>(_currentIndexNumber))));
@@ -55,12 +44,12 @@ uint8_t Dictionary::getBitsNumber()
 
 	if (!_flushFlag)
 	{
-		return countBit(_currentIndexNumber) + 1;
+		return static_cast<uint8_t>(ceil(log2(static_cast<double>(_currentIndexNumber + 1))));
 	}
 	else
 	{
 		_flushFlag = false;
 		return 8;
-		return countBit(_maxIndexNumber);
+		return static_cast<uint8_t>(log2(static_cast<double>(_maxIndexNumber)));
 	}
 }
