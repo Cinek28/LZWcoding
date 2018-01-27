@@ -63,7 +63,7 @@ void TestUtil::fillInputHistogram(string filename, unsigned int rank)
 			++size;
 		}
 
-		sort(inputHistogram.begin(), inputHistogram.end(), [&](const pair<uint8_t*, uint8_t>& a, const pair<uint8_t*, uint8_t>& b)->bool {
+		sort(inputHistogram.begin(), inputHistogram.end(), [&](const pair<uint8_t*, uint32_t>& a, const pair<uint8_t*, uint32_t>& b)->bool {
 			return a.first > b.first;
 		});
 	double probability = 0.0;
@@ -177,6 +177,11 @@ void TestUtil::runTest(LZWEngine* engine, const char* source, const char* destin
 	codingTime = calculateTime([&]()->double {return engine->Code(source, destination, dictionarySize); });
 	decodingTime = calculateTime([engine, destination, result]()->double {return engine->Decode(destination, result); });
 	compressionRatio = static_cast<double>(getFileSizeInBytes(source)) / static_cast<double>(getFileSizeInBytes(destination));
+	std::cout << "Plik: " << source << std::endl;
+	std::cout << "Rozmiar s³ownika: " << dictionarySize << std::endl;
+	std::cout << "Stopieñ kompresji: " << compressionRatio << std::endl;
+	std::cout << "Czas kodowania: " << codingTime << " ms." << std::endl;
+	std::cout << "Czas dekodowania: " << decodingTime << " ms." << std::endl;
 	if (!entropyCalculated)
 	{
 		fillInputHistogram(source, 2);
@@ -188,14 +193,8 @@ void TestUtil::runTest(LZWEngine* engine, const char* source, const char* destin
 	}
 	fillOutputHistogram(destination);
 	codingEfficiency = bitRate / entropy;
-	std::cout << "Plik: " << source << std::endl;
-	std::cout << "Rozmiar s³ownika: " << dictionarySize << std::endl;
-	std::cout << "Stopieñ kompresji: " << compressionRatio << std::endl;
-	std::cout << "Czas kodowania: " << codingTime << " ms." << std::endl;
-	std::cout << "Czas dekodowania: " << decodingTime << " ms." << std::endl;
 	std::cout << "Entropia: " << entropy << " bit" << std::endl;
 	std::cout << "Entropia 2 rzêdu: " << entropy2 << " bit" << std::endl;
-	fillInputHistogram(source, 3);
 	std::cout << "Entropia 3 rzêdu: " << entropy3 << " bit" << std::endl;
 	std::cout << "Œrednia d³ugoœæ bitowa: " << bitRate << "bit" << std::endl;
 	std::cout << "Efektywnoœæ kodowania: " << codingEfficiency << std::endl;
@@ -233,9 +232,11 @@ void TestUtil::csvHistogramEntry(string filename)
 	histogramFile.open(filename);
 	histogramFile << filename << "\n";
 	histogramFile << "Value,Count" << "\n";
+	int i = 0;
 	for (auto item : inputHistogram)
 	{
-		histogramFile << item.first << "," << item.second << "\n";
+		histogramFile << i << "," << item.second << "\n";
+		++i;
 	}
 	histogramFile.close();
 }

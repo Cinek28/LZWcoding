@@ -75,9 +75,9 @@ int main(int argc, char** argv)
 			resultFile << test.csvEntry(file.u8string().substr(file.u8string().find_last_of("\\") + 1).c_str());
 		}
 		test.entropyCalculated = false;
-	//	string filename = file.u8string().substr(file.u8string().find_last_of("\\") + 1).c_str();
-	//	filename = filename.substr(0, filename.find_last_of(".")) + "histogram.csv";
-	//	test.csvHistogramEntry(filename);
+		string filename = file.u8string().substr(file.u8string().find_last_of("\\") + 1).c_str();
+		filename = filename.substr(0, filename.find_last_of(".")) + "histogram.csv";
+		test.csvHistogramEntry(filename);
 	}
 	resultFile.close();
 
