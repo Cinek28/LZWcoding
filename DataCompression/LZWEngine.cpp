@@ -11,6 +11,7 @@ int LZWEngine::Code(const char* source, const char* dest, uint32_t dicSize) {
 
 	_sCompressConfig.overflow_type = WorkingSet;
 	_sCompressConfig.dictionary_size = dicSize;
+	_symbolBitsNumber.clear();
 
 	_pDictionary.reset(new HashDictionary(8, _sCompressConfig.dictionary_size, listOverflow));
 
@@ -75,9 +76,9 @@ int LZWEngine::Code(const char* source, const char* dest, uint32_t dicSize) {
 
 	_pCoder.reset(new DataCoder(dest));
 	_pCoder->writeCompressionHeader(_sCompressConfig);
+	int n = 0;
 	for (const auto& i : codeVector)
 	{
-		static int n=0;
 		_pCoder->writeIndex(i, _symbolBitsNumber[n].second);
 		++n;
 	}
