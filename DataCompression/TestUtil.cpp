@@ -76,39 +76,12 @@ void TestUtil::fillInputHistogram(string filename, unsigned int rank)
 
 void TestUtil::fillOutputHistogram(string filename)
 {
-	string extension = filename.substr(filename.find_last_of("."));
-	outputHistogram = std::vector<uint32_t>(eng->_symbolBitsNumber.size(), 0);
-	std::vector<uint8_t> bitCountVector(eng->_symbolBitsNumber.size(), 0);
 	bitRate = 0.0;
-	if (extension != ".lzw")
-	{
-		std::cout << "Not lzw file." << std::endl;
-		return;
-	}
-	try
-	{
-		reader.reset(new DataReader(filename));
-	}
-	catch (std::invalid_argument exception)
-	{
-		std::cout << exception.what() << std::endl;
-		return;
-	}
 
-	for (auto& inputElement : eng->_symbolBitsNumber)
-	{
-		++outputHistogram[inputElement.first];
-		bitCountVector[inputElement.first] = inputElement.second;
-	}
-	auto predicate = [](const uint32_t &item) { return item == 0; };
-	outputHistogram.erase(std::remove_if(outputHistogram.begin(), outputHistogram.end(), predicate), outputHistogram.end());
-	bitCountVector.erase(std::remove_if(bitCountVector.begin(), bitCountVector.end(), predicate), bitCountVector.end());
-	double probability = 0.0;
 	size_t size = eng->_symbolBitsNumber.size();
-	for (int i = 0; i < outputHistogram.size(); ++i)
+	for (int i = 0; i < size; ++i)
 	{
-		probability = static_cast<double>(outputHistogram[i]) / static_cast<double>(size);
-		bitRate += bitCountVector[i]*probability;
+		bitRate += static_cast<double>(eng->_symbolBitsNumber[i].second)/size;
 	}
 }
 

@@ -19,7 +19,7 @@ int main(int argc, char** argv)
 	for (auto & path : filesystem::directory_iterator(".\\Files"))
 	{
 		filesystem::path file = filesystem::canonical(path);
-		for (int i = 12; i < 27; i=i+2) {
+		for (int i = 12; i < 33; i=i+2) {
 			std::cout << path << std::endl;
 			test.runTest(&eng, file.u8string().c_str(), ".\\TestOut.lzw", ".\\result.pgm", i);
 			resultFile << test.csvEntry(file.u8string().substr(file.u8string().find_last_of("\\") + 1).c_str());
