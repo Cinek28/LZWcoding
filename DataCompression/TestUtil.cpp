@@ -187,8 +187,7 @@ void TestUtil::csvHistogramEntry(string filename)
 {
 	ofstream histogramFile;
 	histogramFile.open(filename);
-	histogramFile << filename << "\n";
-	histogramFile << "Value,Count" << "\n";
+	histogramFile <<"\"sep=,\"\nValue,Count\n";
 	int i = 0;
 	for (int i = 0; i < 256; ++i)
 	{
