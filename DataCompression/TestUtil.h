@@ -48,8 +48,8 @@ private:
 
 	int dictionarySize;
 
-	std::vector<std::pair<uint8_t*, uint32_t>> inputHistogram;
-	std::vector<std::pair<uint32_t, uint32_t>> outputHistogram;
+	std::vector<uint32_t> inputHistogram;
+	std::vector<uint32_t> outputHistogram;
 
 	unique_ptr<DataReader> reader; 
 	LZWEngine* eng;

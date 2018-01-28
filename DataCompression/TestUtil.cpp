@@ -26,7 +26,7 @@ double TestUtil::getCompressionRate() const
 
 void TestUtil::fillInputHistogram(string filename, unsigned int rank)
 {
-	inputHistogram.clear();
+	inputHistogram = std::vector<uint32_t>(MAX_HISTOGRAM_SIZE, 0);
 	entropy = 0.0;
 	try 
 	{
@@ -38,40 +38,38 @@ void TestUtil::fillInputHistogram(string filename, unsigned int rank)
 		return;
 	}
 
-	uint32_t size = 0;
 	auto FileData = reader->getBuffer();
-	
-		for (int i = 0; i < FileData.size() - rank + 1; i = i + rank)
+	uint32_t size = FileData.size();
+	uint32_t index = 0;
+		for (int i = 0; i < size - rank + 1; i = i + rank)
 		{
-			auto foundElement = std::find_if(inputHistogram.begin(), inputHistogram.end(), [&](const std::pair<uint8_t*, uint32_t>& pair)->bool
+			switch (rank)
 			{
-				for (unsigned int j = 0; j < rank; ++j) 
-				{
-					if (*(pair.first + j*sizeof(uint8_t)) != FileData[i + j])
-						return false;
-				}
-				return true;
-			});
-			if (inputHistogram.end() == foundElement)
-			{
-				inputHistogram.push_back(std::make_pair(&FileData[i], 1));
+			case 1:
+				index = FileData[i];
+				break;
+
+			case 2:
+				index = static_cast<uint32_t>(FileData[i]) + (static_cast<uint32_t>(FileData[i+1])<<8);
+				break;
+			case 3:
+				index = static_cast<uint32_t>(FileData[i]) + (static_cast<uint32_t>(FileData[i + 1]) << 8) + (static_cast<uint32_t>(FileData[i + 2]) << 16);
+				break;
+			default:
+				index = FileData[i];
 			}
-			else
-			{
-				++(foundElement->second);
-			}
-			++size;
+			++inputHistogram[index];
+			index = 0;
 		}
 
-		sort(inputHistogram.begin(), inputHistogram.end(), [&](const pair<uint8_t*, uint32_t>& a, const pair<uint8_t*, uint32_t>& b)->bool {
-			return a.first > b.first;
-		});
 	double probability = 0.0;
 
-	for (auto symbol : inputHistogram)
+	for (auto count : inputHistogram)
 	{
-		probability = static_cast<double>(symbol.second) / static_cast<double>(size)/ rank;
-		entropy -= log2(probability)*probability;
+		if (count != 0){
+			probability = static_cast<double>(count) / (static_cast<double>(size)/rank);
+			entropy -= log2(probability)*probability;
+		}
 	}
 
 }
@@ -79,7 +77,8 @@ void TestUtil::fillInputHistogram(string filename, unsigned int rank)
 void TestUtil::fillOutputHistogram(string filename)
 {
 	string extension = filename.substr(filename.find_last_of("."));
-	outputHistogram.clear();
+	outputHistogram = std::vector<uint32_t>(eng->_symbolBitsNumber.size(), 0);
+	std::vector<uint8_t> bitCountVector(eng->_symbolBitsNumber.size(), 0);
 	bitRate = 0.0;
 	if (extension != ".lzw")
 	{
@@ -96,36 +95,21 @@ void TestUtil::fillOutputHistogram(string filename)
 		return;
 	}
 
-		for (auto& inputElement : eng->_symbolBitsNumber)
-		{
-			auto foundElement = std::find_if(outputHistogram.begin(), outputHistogram.end(), [inputElement](const std::pair<uint32_t, uint32_t>& pair)->bool
-			{
-				return inputElement.first == pair.first;
-			});
-			if (outputHistogram.end() == foundElement)
-			{
-				outputHistogram.push_back(std::make_pair(inputElement.first, 1));
-			}
-			else
-			{
-				++(foundElement->second);
-			}
-		}
-		sort(outputHistogram.begin(), outputHistogram.end(), [&](const pair<uint32_t, uint32_t>& a, const pair<uint32_t, uint32_t>& b)->bool{
-			return a.first > b.first; 
-		});
+	for (auto& inputElement : eng->_symbolBitsNumber)
+	{
+		++outputHistogram[inputElement.first];
+		bitCountVector[inputElement.first] = inputElement.second;
+	}
+	auto predicate = [](const uint32_t &item) { return item == 0; };
+	outputHistogram.erase(std::remove_if(outputHistogram.begin(), outputHistogram.end(), predicate), outputHistogram.end());
+	bitCountVector.erase(std::remove_if(bitCountVector.begin(), bitCountVector.end(), predicate), bitCountVector.end());
 	double probability = 0.0;
 	size_t size = eng->_symbolBitsNumber.size();
-	for (auto symbol : outputHistogram)
+	for (int i = 0; i < outputHistogram.size(); ++i)
 	{
-		auto bitNumberPair = std::find_if(eng->_symbolBitsNumber.begin(), eng->_symbolBitsNumber.end(), [&](auto item)->bool {
-			return item.first == symbol.first;
-		});
-		probability = static_cast<double>(symbol.second) / static_cast<double>(size);
-		bitRate += bitNumberPair->second*probability;
+		probability = static_cast<double>(outputHistogram[i]) / static_cast<double>(size);
+		bitRate += bitCountVector[i]*probability;
 	}
-
-
 }
 
 unsigned long long TestUtil::getFileSizeInBytes(const char* file)
@@ -233,14 +217,13 @@ void TestUtil::csvHistogramEntry(string filename)
 	histogramFile << filename << "\n";
 	histogramFile << "Value,Count" << "\n";
 	int i = 0;
-	for (auto item : inputHistogram)
+	for (int i = 0; i < 256; ++i)
 	{
-		histogramFile << i << "," << item.second << "\n";
-		++i;
+		histogramFile << i << "," << inputHistogram[i] << "\n";
 	}
 	histogramFile.close();
 }
 string TestUtil::getCsvHeader()
 {
-	return "\"sep=,\"\nfilename,dictionarySize,compressionRatio,compressionTime[ms],decompressionTime[s],entropy[bit],entropy2[bit],entropy3[bit],bitRate[bit],efficiency\n";
+	return "\"sep=,\"\nfilename,dictionarySize,compressionRatio,compressionTime[ms],decompressionTime[ms],entropy[bit],entropy2[bit],entropy3[bit],bitRate[bit],efficiency\n";
 }
